@@ -436,8 +436,8 @@ function renderQuestion() {
     '<div class="' + feedbackHidden + '" id="feedback"></div>' +
     '<div class="card">' +
       '<div class="card-title"><span class="q-num">' + (currentIdx + 1) + '</span><span>' + typeLabel + q.q + '</span></div>' +
-      '<button class="btn" id="opt-A" onclick="answer('A')">' + q.a + '</button>' +
-      '<button class="btn" id="opt-B" onclick="answer('B')">' + q.b + '</button>' +
+      '<button class="btn" id="opt-A" onclick="answer(&amp;#39;A&amp;#39;)">' + q.a + '</button>' +
+      '<button class="btn" id="opt-B" onclick="answer(&amp;#39;B&amp;#39;)">' + q.b + '</button>' +
       '<button class="' + nextHidden + '" id="next-btn" onclick="nextQuestion()">' + nextLabel + '</button>' +
     '</div>');
 
