@@ -567,7 +567,7 @@ function showScore() {
       '<button class="btn-primary" onclick="startNewRound()">🔄 再挑战一轮</button>' +
       '<button class="btn-secondary" onclick="showBoard()">🏆 查看排行榜</button><br>' +
       '<button class="btn-primary btn-next-player" onclick="nextPlayer()" style="margin-top:10px;">👤 下一位玩家</button>' +
-      '<button class="btn-secondary btn-back-home" onclick="location.href=\'./index.html\'" style="margin-top:10px;">📋 返回合集</button>' +
+      '<button class="btn-secondary btn-back-home" onclick="location.href=&apos;./index.html&apos;" style="margin-top:10px;">📋 返回合集</button>' +
     '</div>' +
     '</div>');
 }
@@ -606,7 +606,7 @@ function showNameInput() {
       '<p style="color:var(--muted);margin-bottom:20px;">宇宙知识选择题挑战 🪐</p>' +
       '<p style="font-size:14px;color:var(--muted);margin-bottom:14px;">' +
         '每轮随机5道题 <span style="color:var(--gold);">（3基础 + 2进阶）</span><br>每题限时20秒，加油！</p>' +
-      '<input type="text" id="nameInput" placeholder="给自己取个名字吧..." maxlength="12" value="' + playerName.replace(/"/g, '&quot;') + '" onkeydown="if(event.key==='Enter')confirmName()">' +
+      '<input type="text" id="nameInput" placeholder="给自己取个名字吧..." maxlength="12" value="' + playerName.replace(/"/g, '&quot;') + '" onkeydown="if(event.key===&apos;Enter&apos;)confirmName()">' +
       '<button class="btn-primary" onclick="confirmName()" style="width:80%;">🚀 开始挑战</button>' +
     '</div>' +
     '</div>');
