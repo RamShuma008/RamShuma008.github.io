@@ -1,0 +1,1662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🚀 宇宙小探索家奔奔 - 消消乐闯关</title>
+<style>
+/* ========== 全局重置与基础样式 ========== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    font-family: 'PingFang SC', 'Microsoft YaHei', 'Comic Sans MS', sans-serif;
+    user-select: none; -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+/* ========== 太空主题背景（升级版·浩瀚卡通星空） ========== */
+.game-container {
+    width: 100vw; height: 100vh; position: relative;
+    background: linear-gradient(160deg, #1a1a3e 0%, #2d1b4e 15%, #1e3a5f 35%,
+                 #162d50 55%, #1b2845 75%, #2a1847 90%, #1a1a3e 100%);
+    overflow: hidden; display: flex; flex-direction: column; align-items: center;
+}
+
+/* 深色太空背景层 */
+.space-bg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+}
+
+/* ---- 大面积发光星星（多层） ---- */
+.star-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+}
+.star-big {
+    position: absolute; border-radius: 50%; background: white;
+    animation: starPulse 3s infinite ease-in-out alternate;
+}
+@keyframes starPulse {
+    0% { opacity: 0.4; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1.15); }
+}
+.star-medium {
+    position: absolute; border-radius: 50%; background: rgba(255,255,255,0.85);
+    animation: starTwinkle 2s infinite ease-in-out alternate;
+}
+@keyframes starTwinkle {
+    0% { opacity: 0.25; transform: scale(0.8); }
+    100% { opacity: 0.95; transform: scale(1.1); }
+}
+.star-tiny {
+    position: absolute; width: 2px; height: 2px; border-radius: 50%;
+    background: white; animation: tinyBlink 1.5s infinite ease-in-out;
+}
+@keyframes tinyBlink {
+    0%, 100% { opacity: 0.1; } 50% { opacity: 0.8; }
+}
+
+/* ---- 彩色星云 ---- */
+.nebula {
+    position: absolute; border-radius: 50%; filter: blur(40px);
+    opacity: 0.18; animation: nebulaDrift 20s infinite ease-in-out alternate;
+}
+.nebula-pink { background: radial-gradient(ellipse, #ff6bcf, transparent 70%); }
+.nebula-blue { background: radial-gradient(ellipse, #6bbcff, transparent 70%); }
+.nebula-purple { background: radial-gradient(ellipse, #b06bff, transparent 70%); }
+.nebula-gold { background: radial-gradient(ellipse, #ffd166, transparent 70%); }
+@keyframes nebulaDrift {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(15px, -10px) scale(1.08); }
+}
+
+/* ---- 弯弯月牙（CSS绘制） ---- */
+.moon-crescent {
+    position: absolute; border-radius: 50%;
+    background: linear-gradient(135deg, #fffde8, #ffe87a);
+    box-shadow: 0 0 20px 4px rgba(255,240,150,0.3),
+                0 0 40px 8px rgba(255,230,120,0.12);
+    animation: moonFloat 8s infinite ease-in-out;
+}
+.moon-crescent::after {
+    content: ''; position: absolute; top: -6px; left: 6px;
+    width: 85%; height: 85%; border-radius: 50%;
+    background: linear-gradient(160deg, #1a1a3e, #2d1b4e);
+}
+@keyframes moonFloat {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-8px) rotate(5deg); }
+}
+
+/* ---- 流星轨迹 ---- */
+.shooting-star {
+    position: absolute; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0), white, rgba(255,255,255,0));
+    opacity: 0; animation: shoot 4s linear infinite;
+}
+.shooting-star::before {
+    content: ''; position: absolute; right: 0; top: -3px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: white; box-shadow: 0 0 8px 3px rgba(255,255,255,0.5);
+}
+@keyframes shoot {
+    0% { transform: translateX(0) translateY(0); opacity: 0; }
+    5% { opacity: 1; }
+    30% { transform: translateX(-200px) translateY(120px); opacity: 0; }
+    100% { opacity: 0; }
+}
+
+/* ---- 卡通圆滚滚行星 ---- */
+.cartoon-planet {
+    position: absolute; border-radius: 50%;
+    animation: planetBobble 6s infinite ease-in-out;
+}
+.cartoon-planet::before {
+    content: ''; position: absolute; top: 12%; left: 15%;
+    width: 25%; height: 20%; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+}
+.planet-saturn {
+    width: 44px; height: 38px;
+    background: linear-gradient(145deg, #f4c56c, #e8a83a);
+    box-shadow: inset -6px -4px 14px rgba(0,0,0,0.15), 0 0 16px rgba(244,197,108,0.25);
+}
+.planet-saturn::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 68px; height: 14px; margin-left: -34px; margin-top: -7px;
+    border: 3px solid rgba(220,180,80,0.5); border-radius: 50%;
+    transform: rotateX(65deg);
+}
+.planet-earth {
+    width: 36px; height: 36px;
+    background: linear-gradient(145deg, #6bbaff, #3d8bd4);
+    box-shadow: inset -5px -5px 12px rgba(0,0,0,0.15), 0 0 14px rgba(107,186,255,0.25);
+}
+.planet-mars {
+    width: 32px; height: 32px;
+    background: linear-gradient(145deg, #e07860, #c45030);
+    box-shadow: inset -4px -4px 10px rgba(0,0,0,0.15), 0 0 12px rgba(224,120,96,0.25);
+}
+.planet-moon {
+    width: 22px; height: 22px;
+    background: linear-gradient(145deg, #e8e0d0, #c8beb0);
+    box-shadow: 0 0 8px rgba(232,224,208,0.3);
+}
+@keyframes planetBobble {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+/* ---- 可爱飞碟 UFO ---- */
+.ufo {
+    position: absolute; animation: ufoHover 7s ease-in-out infinite;
+}
+.ufo-body {
+    width: 46px; height: 18px; background: linear-gradient(180deg, #d0dce8, #9aadbf);
+    border-radius: 23px / 11px; position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.ufo-dome {
+    width: 22px; height: 16px; background: linear-gradient(180deg, #7ee8fa, #4ac8e8);
+    border-radius: 22px 22px 0 0; position: absolute; top: -13px; left: 12px;
+}
+.ufo-lights span {
+    display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+    position: absolute; bottom: -3px;
+    animation: ufoLight 1s infinite alternate;
+}
+.ufo-lights span:nth-child(1) { left: 6px; background: #ff6b6b; animation-delay: 0s; }
+.ufo-lights span:nth-child(2) { left: 18px; background: #ffd93d; animation-delay: 0.3s; }
+.ufo-lights span:nth-child(3) { left: 30px; background: #6bff6b; animation-delay: 0.6s; }
+@keyframes ufoLight { 0% { opacity: 0.3; } 100% { opacity: 1; box-shadow: 0 0 4px currentColor; } }
+@keyframes ufoHover {
+    0%, 100% { transform: translate(0, 0) rotate(-2deg); }
+    33% { transform: translate(12px, -8px) rotate(2deg); }
+    66% { transform: translate(-6px, -4px) rotate(-1deg); }
+}
+
+/* ---- 载人小飞船 ---- */
+.space-ship {
+    position: absolute; animation: shipFly 12s linear infinite;
+}
+.ship-body {
+    width: 36px; height: 48px;
+    background: linear-gradient(180deg, #ffffff, #dde4ed);
+    clip-path: polygon(50% 0%, 85% 30%, 85% 75%, 70% 100%, 30% 100%, 15% 75%, 15% 30%);
+    position: relative;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+}
+.ship-window {
+    width: 12px; height: 12px; background: linear-gradient(145deg, #7ee8fa, #4ac8e8);
+    border-radius: 50%; position: absolute; top: 22px; left: 12px;
+    border: 2px solid rgba(255,255,255,0.6);
+}
+.ship-flame {
+    width: 14px; height: 20px;
+    background: linear-gradient(to bottom, #ffd93d, #ff6b6b, transparent);
+    border-radius: 0 0 50% 50%; position: absolute; bottom: -16px; left: 11px;
+    animation: flameFlicker 0.15s infinite alternate;
+}
+@keyframes flameFlicker { 0% { transform: scaleY(0.9); } 100% { transform: scaleY(1.1); } }
+@keyframes shipFly {
+    0% { transform: translate(110vw, 20vh); }
+    100% { transform: translate(-10vw, 45vh); }
+}
+
+/* ---- 人造卫星 ---- */
+.satellite {
+    position: absolute; animation: satelliteOrbit 25s linear infinite;
+}
+.sat-body {
+    width: 20px; height: 14px; background: linear-gradient(180deg, #d0dce8, #9aadbf);
+    border-radius: 3px; position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.sat-panel-left, .sat-panel-right {
+    width: 18px; height: 26px; background: linear-gradient(180deg, #4a6baf, #2d4a8f);
+    position: absolute; top: -6px;
+    border-radius: 2px;
+}
+.sat-panel-left { left: -20px; }
+.sat-panel-right { right: -20px; }
+.sat-light {
+    width: 3px; height: 3px; background: #ff3333; border-radius: 50%;
+    position: absolute; top: 2px; right: 2px;
+    animation: blinkRed 1.5s infinite;
+}
+@keyframes blinkRed { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes satelliteOrbit {
+    from { transform: rotate(0deg) translateX(30vw) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(30vw) rotate(-360deg); }
+}
+
+/* ---- 五彩闪烁光点/光斑 ---- */
+.glow-orb {
+    position: absolute; border-radius: 50%;
+    animation: orbGlow 4s infinite ease-in-out;
+}
+@keyframes orbGlow {
+    0%, 100% { opacity: 0.15; transform: scale(0.8); }
+    50% { opacity: 0.4; transform: scale(1.2); }
+}
+
+/* ---- 漂浮装饰元素（樱桃/机械主题） ---- */
+.float-item {
+    position: absolute; opacity: 0.25; animation: floatUp 12s infinite ease-in-out;
+}
+@keyframes floatUp {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-18px) rotate(8deg); }
+}
+
+/* 半透明柔光光斑 */
+.soft-glow-spot {
+    position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%);
+    pointer-events: none;
+}
+
+/* ========== 页面通用布局 ========== */
+.page { display: none; width: 100%; max-width: 520px; height: 100%;
+    flex-direction: column; align-items: center; justify-content: center;
+    z-index: 10; padding: 20px; position: relative; }
+.page.active { display: flex; }
+
+/* ========== 开始页面 ========== */
+#startPage {
+    background: rgba(255,255,255,0.42); backdrop-filter: blur(12px);
+    border-radius: 28px; margin: 16px; padding: 28px 22px;
+    box-shadow: 0 8px 32px rgba(100,60,180,0.2), 0 0 60px rgba(120,80,200,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.game-logo {
+    font-size: 24px; font-weight: bold; color: #5b3a7e;
+    text-align: center; margin-bottom: 2px; letter-spacing: 2px;
+    text-shadow: 2px 2px 0 rgba(255,120,170,0.2);
+}
+.game-subtitle {
+    font-size: 12px; color: #8b6fa8; text-align: center; margin-bottom: 20px;
+}
+
+/* 奔奔机器人头像区域 */
+.robot-container {
+    width: 190px; height: 190px; margin: 0 auto 16px; position: relative;
+}
+.robot-body {
+    width: 150px; height: 150px; margin: 20px auto; position: relative;
+}
+/* 樱桃头盔 */
+.cherry-helmet {
+    width: 104px; height: 94px; background: linear-gradient(145deg, #ff6b9d, #e84a7f);
+    border-radius: 52px 52px 48px 48px; position: absolute; top: 0; left: 23px;
+    box-shadow: inset -8px -8px 18px rgba(0,0,0,0.12), 0 4px 15px rgba(232,74,127,0.35);
+}
+.helmet-window {
+    width: 66px; height: 44px; background: linear-gradient(180deg, #e8f0fe, #c8d8f8);
+    border-radius: 20px; position: absolute; top: 25px; left: 19px;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    box-shadow: inset 2px 2px 6px rgba(255,255,255,0.6);
+}
+.robot-eye {
+    width: 9px; height: 13px; border: solid 3px #444;
+    border-radius: 50% 50% 38% 38%; border-bottom: none;
+}
+.robot-blush {
+    width: 9px; height: 6px; background: rgba(255,130,160,0.55);
+    border-radius: 50%; position: absolute;
+}
+.blush-left { bottom: 10px; left: 11px; }
+.blush-right { bottom: 10px; right: 11px; }
+
+/* 天线与旗帜 */
+.antenna-line {
+    width: 3px; height: 30px; background: linear-gradient(to top, #ccc, #aaa);
+    position: absolute; top: -28px; left: 51px; border-radius: 2px;
+    transform-origin: bottom center; animation: antennaWiggle 3s infinite ease-in-out;
+}
+@keyframes antennaWiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(8deg); }
+}
+.antenna-flag {
+    width: 0; height: 0; border-left: 11px solid transparent;
+    border-right: 11px solid transparent; border-bottom: 16px solid #7ec8e3;
+    position: absolute; top: -54px; left: 44px;
+}
+.flag-face {
+    font-size: 10px; position: absolute; top: 3px; left: -4px;
+}
+
+/* 身体（太空小裙子） */
+.robot-dress {
+    width: 84px; height: 56px; background: linear-gradient(180deg, #fff, #f8f8f8);
+    border-radius: 10px 10px 28px 28px; position: absolute; top: 88px; left: 33px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.dress-collar {
+    width: 28px; height: 13px; background: #ff4d6d;
+    border-radius: 0 0 14px 14px; position: absolute; top: 0; left: 28px;
+}
+.dress-skirt {
+    width: 84px; height: 36px; background: linear-gradient(180deg, #fff 65%, #ff4d6d 65%);
+    border-radius: 0 0 28px 28px; position: absolute; top: 12px; left: 0;
+}
+.dress-hem {
+    width: 88px; height: 5px; background: #e83a58;
+    border-radius: 3px; position: absolute; bottom: 4px; left: -2px;
+}
+.robot-arm {
+    width: 16px; height: 34px; background: white; border-radius: 7px;
+    position: absolute; top: 92px; border: 2px solid #eee;
+    box-shadow: inset 1px 1px 3px rgba(200,200,200,0.4);
+}
+.arm-left { left: 17px; transform: rotate(12deg); }
+.arm-right { right: 17px; transform: rotate(-12deg); }
+.robot-boot {
+    width: 24px; height: 17px; border-radius: 7px 7px 9px 9px;
+    position: absolute; top: 136px;
+}
+.boot-left { left: 40px; background: linear-gradient(135deg, #fff 60%, #ff4d6d 60%); }
+.boot-right { right: 40px; background: linear-gradient(225deg, #fff 60%, #ff4d6d 60%); }
+.boot-thruster {
+    width: 7px; height: 5px; background: linear-gradient(90deg, #ddd, #bbb, #ddd);
+    border-radius: 2px; position: absolute; bottom: 1px; right: 2px;
+}
+
+/* 头像外围环绕装饰图标 */
+.orbit-ring {
+    position: absolute; top: -10px; left: -10px; width: 210px; height: 210px;
+    pointer-events: none;
+}
+.orbit-icon {
+    position: absolute; font-size: 20px; opacity: 0.45;
+    animation: orbitSpin 20s linear infinite;
+}
+.orbit-icon:nth-child(1) { top: 0; left: 50%; transform: translateX(-50%); animation-delay: 0s; }
+.orbit-icon:nth-child(2) { top: 50%; right: 0; transform: translateY(-50%); animation-delay: -2.5s; }
+.orbit-icon:nth-child(3) { bottom: 0; left: 50%; transform: translateX(-50%); animation-delay: -5s; }
+.orbit-icon:nth-child(4) { top: 50%; left: 0; transform: translateY(-50%); animation-delay: -7.5s; }
+.orbit-icon:nth-child(5) { top: 12%; right: 12%; animation-delay: -10s; }
+.orbit-icon:nth-child(6) { bottom: 12%; left: 12%; animation-delay: -12.5s; }
+.orbit-icon:nth-child(7) { top: 38%; right: -4%; animation-delay: -15s; }
+.orbit-icon:nth-child(8) { bottom: 38%; left: -4%; animation-delay: -17.5s; }
+@keyframes orbitSpin {
+    from { transform: translate(-50%, -50%) rotate(0deg) translateY(-105px) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg) translateY(-105px) rotate(-360deg); }
+}
+.orbit-icon:nth-child(2), .orbit-icon:nth-child(4) { animation-name: orbitSpin2; }
+@keyframes orbitSpin2 {
+    from { transform: translate(50%, -50%) rotate(0deg) translateY(-105px) rotate(0deg); }
+    to { transform: translate(50%, -50%) rotate(360deg) translateY(-105px) rotate(-360deg); }
+}
+.orbit-icon:nth-child(5), .orbit-icon:nth-child(6), .orbit-icon:nth-child(7), .orbit-icon:nth-child(8) { animation-name: orbitSpin3; }
+@keyframes orbitSpin3 {
+    from { transform: translate(-50%, -50%) rotate(0deg) translateY(-82px) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(-360deg) translateY(-82px) rotate(360deg); }
+}
+
+/* 开始按钮 */
+.btn-start {
+    width: 210px; height: 54px; border: none; border-radius: 27px;
+    font-size: 19px; font-weight: bold; color: white; cursor: pointer;
+    background: linear-gradient(135deg, #7c5cfc, #a78bfa);
+    box-shadow: 0 6px 20px rgba(124,92,252,0.35);
+    transition: all 0.2s; margin-top: 10px; letter-spacing: 2px;
+}
+.btn-start:hover, .btn-start:active {
+    transform: scale(1.05); box-shadow: 0 8px 25px rgba(124,92,252,0.45);
+}
+.btn-start::after { content: ' 🚀'; }
+
+/* ========== 游戏主界面（左游戏 + 右排行榜） ========== */
+#gamePage {
+    padding: 12px 16px; justify-content: flex-start; padding-top: 8px;
+    flex-direction: row;
+    gap: 12px;
+    width: 100%;
+    max-width: 900px;
+}
+.game-main {
+    display: flex; flex-direction: column; align-items: center;
+    flex: 1; min-width: 0; max-width: 520px;
+}
+.game-header {
+    width: 100%; display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; z-index: 10;
+}
+.header-info {
+    display: flex; gap: 10px; align-items: center;
+}
+.info-badge {
+    background: rgba(255,255,255,0.72); backdrop-filter: blur(8px);
+    border-radius: 16px; padding: 5px 12px; font-size: 12px;
+    color: #5b3a7e; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.header-btn {
+    background: rgba(255,255,255,0.72); backdrop-filter: blur(8px);
+    border: none; border-radius: 16px; padding: 6px 13px;
+    font-size: 12px; color: #5b3a7e; cursor: pointer; font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.2s;
+}
+.header-btn:active { transform: scale(0.95); }
+
+/* 小机器人头像（游戏中） */
+.mini-robot {
+    width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(145deg, #ff8ab4, #e84a7f);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 12px rgba(232,74,127,0.3); cursor: pointer;
+    transition: transform 0.3s; flex-shrink: 0;
+}
+.mini-robot:active { transform: scale(0.9); }
+.mini-robot-face {
+    font-size: 26px; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+}
+
+/* 题目展示区 */
+.question-area {
+    width: 100%; background: rgba(255,255,255,0.58); backdrop-filter: blur(12px);
+    border-radius: 20px; padding: 16px 14px; margin-bottom: 10px;
+    box-shadow: 0 4px 16px rgba(100,60,140,0.1); z-index: 10;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+.question-label {
+    font-size: 11px; color: #a080bf; margin-bottom: 5px; font-weight: 600;
+}
+.question-text {
+    font-size: 16px; color: #4a3070; font-weight: bold; line-height: 1.5;
+    text-align: center;
+}
+.progress-bar {
+    width: 100%; height: 6px; background: rgba(224,212,237,0.5); border-radius: 3px;
+    margin-top: 10px; overflow: hidden;
+}
+.progress-fill {
+    height: 100%; background: linear-gradient(90deg, #7c5cfc, #a78bfa, #c4b5fd);
+    border-radius: 3px; transition: width 0.4s ease;
+    width: 0%;
+}
+
+/* 消消乐选项网格 */
+.options-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px;
+    width: 100%; margin-bottom: 8px; z-index: 10;
+}
+.option-card {
+    aspect-ratio: 1; border-radius: 16px; background: rgba(255,255,255,0.75);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 3px 10px rgba(100,60,140,0.1); border: 2.5px solid transparent;
+    position: relative; overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+}
+.option-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(100,60,140,0.16); }
+.option-card:active { transform: scale(0.88); }
+.option-card.selected {
+    background: linear-gradient(145deg, #e8d5f5, #d4bbf0);
+    border-color: #9b7cd4; transform: scale(0.92);
+    box-shadow: 0 2px 8px rgba(155,124,212,0.3);
+}
+.option-card.correct {
+    background: linear-gradient(145deg, #d4edda, #b8e6c8);
+    border-color: #52c97a; animation: correctPulse 0.5s ease;
+}
+.option-card.wrong {
+    background: linear-gradient(145deg, #f8d7da, #f1aec0);
+    border-color: #e05a6e; animation: wrongShake 0.5s ease;
+}
+.option-card.eliminated {
+    opacity: 0; transform: scale(0); pointer-events: none;
+}
+@keyframes correctPulse {
+    0% { transform: scale(0.92); } 50% { transform: scale(1.08); } 100% { transform: scale(0.95); }
+}
+@keyframes wrongShake {
+    0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); }
+}
+.option-emoji { font-size: 30px; line-height: 1; margin-bottom: 2px; }
+.option-text { font-size: 10px; color: #666; text-align: center; font-weight: 500; word-break: break-all; }
+
+/* 操作按钮区 */
+.action-area {
+    display: flex; gap: 10px; width: 100%; z-index: 10; margin-bottom: 6px;
+}
+.btn-action {
+    flex: 1; height: 46px; border: none; border-radius: 23px;
+    font-size: 15px; font-weight: bold; cursor: pointer;
+    transition: all 0.2s; color: white; letter-spacing: 2px;
+}
+.btn-confirm {
+    background: linear-gradient(135deg, #52c97a, #6ee7a0);
+    box-shadow: 0 4px 14px rgba(82,201,122,0.35);
+}
+.btn-confirm:active { transform: scale(0.96); }
+.btn-confirm::before { content: '✓ '; }
+.btn-reset {
+    background: linear-gradient(135deg, #ffa07a, #ff8c61);
+    box-shadow: 0 4px 14px rgba(255,160,122,0.35);
+    flex: 0 0 84px; font-size: 14px;
+}
+.btn-reset:active { transform: scale(0.96); }
+
+/* 反馈消息区 */
+.feedback-msg {
+    min-height: 34px; width: 100%; display: flex; align-items: center;
+    justify-content: center; z-index: 10; margin-bottom: 4px;
+}
+.feedback-bubble {
+    background: rgba(255,255,255,0.82); backdrop-filter: blur(10px);
+    border-radius: 16px; padding: 8px 18px; font-size: 13px;
+    color: #5b3a7e; font-weight: 600; text-align: center;
+    box-shadow: 0 3px 10px rgba(100,60,140,0.1);
+    animation: bubbleIn 0.3s ease-out; max-width: 90%;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+@keyframes bubbleIn {
+    from { opacity: 0; transform: translateY(10px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.feedback-bubble.correct-msg { color: #2d8a4e; background: linear-gradient(135deg, rgba(212,237,218,0.92), rgba(184,230,200,0.92)); border-color: rgba(82,201,122,0.3); }
+.feedback-bubble.wrong-msg { color: #c0392b; background: linear-gradient(135deg, rgba(248,215,218,0.92), rgba(241,174,192,0.92)); border-color: rgba(224,90,110,0.3); }
+
+/* ========== 结果页面 ========== */
+#resultPage {
+    background: rgba(255,255,255,0.45); backdrop-filter: blur(12px);
+    border-radius: 28px; margin: 16px; padding: 26px 22px;
+    box-shadow: 0 8px 32px rgba(100,60,140,0.18); border: 1px solid rgba(255,255,255,0.12);
+}
+.result-title { font-size: 22px; font-weight: bold; text-align: center; margin-bottom: 2px; }
+.result-title.pass { color: #2d8a4e; }
+.result-title.fail { color: #e05a6e; }
+.result-subtitle { font-size: 12px; color: #888; text-align: center; margin-bottom: 18px; }
+
+.result-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;
+}
+.stat-card {
+    background: rgba(255,255,255,0.65); border-radius: 14px; padding: 12px;
+    text-align: center;
+}
+.stat-value { font-size: 26px; font-weight: bold; color: #5b3a7e; }
+.stat-label { font-size: 11px; color: #999; margin-top: 2px; }
+
+/* 徽章展示 */
+.medal-display {
+    text-align: center; margin-bottom: 18px;
+}
+.medal-icon { font-size: 58px; animation: medalBounce 1.5s infinite ease-in-out; }
+@keyframes medalBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-8px) scale(1.08); }
+}
+.medal-text { font-size: 14px; color: #7c5cfc; font-weight: bold; margin-top: 5px; }
+
+.result-buttons {
+    display: flex; flex-direction: column; gap: 8px; width: 100%;
+}
+.btn-result {
+    width: 100%; height: 46px; border: none; border-radius: 23px;
+    font-size: 15px; font-weight: bold; cursor: pointer; color: white;
+    transition: all 0.2s; letter-spacing: 2px;
+}
+.btn-next { background: linear-gradient(135deg, #7c5cfc, #a78bfa); box-shadow: 0 4px 14px rgba(124,92,252,0.35); }
+.btn-next:active { transform: scale(0.96); }
+.btn-share { background: linear-gradient(135deg, #52c97a, #6ee7a0); box-shadow: 0 4px 14px rgba(82,201,122,0.35); }
+.btn-share:active { transform: scale(0.96); }
+.btn-rank { background: linear-gradient(135deg, #ffa07a, #ff8c61); box-shadow: 0 4px 14px rgba(255,160,122,0.35); }
+.btn-rank:active { transform: scale(0.96); }
+.btn-back { background: linear-gradient(135deg, #a0a0a0, #888); box-shadow: 0 4px 14px rgba(136,136,136,0.35); }
+.btn-back:active { transform: scale(0.96); }
+
+/* ========== 右侧排行榜面板（常驻） ========== */
+.rank-sidebar {
+    width: 220px; min-width: 200px; max-width: 260px;
+    background: rgba(255,255,255,0.55); backdrop-filter: blur(14px);
+    border-radius: 20px; padding: 16px 12px;
+    box-shadow: 0 4px 24px rgba(100,60,140,0.15);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex; flex-direction: column; z-index: 10;
+    height: fit-content; max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    align-self: flex-start;
+}
+.rank-sidebar-title {
+    font-size: 15px; font-weight: bold; color: #5b3a7e; text-align: center;
+    margin-bottom: 10px; letter-spacing: 1px;
+}
+.rank-sidebar .rank-list { list-style: none; margin: 0; padding: 0; }
+.rank-sidebar .rank-item {
+    display: flex; align-items: center; padding: 7px 8px; border-radius: 10px;
+    margin-bottom: 4px; background: rgba(255,255,255,0.55);
+    transition: all 0.2s;
+}
+.rank-sidebar .rank-item:nth-child(1) { background: linear-gradient(135deg, rgba(255,215,0,0.28), rgba(255,193,7,0.15)); }
+.rank-sidebar .rank-item:nth-child(2) { background: linear-gradient(135deg, rgba(192,192,192,0.22), rgba(176,176,176,0.12)); }
+.rank-sidebar .rank-item:nth-child(3) { background: linear-gradient(135deg, rgba(205,127,50,0.22), rgba(184,134,11,0.12)); }
+.rank-sidebar .rank-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: bold; color: white; margin-right: 6px; flex-shrink: 0;
+}
+.num-gold { background: linear-gradient(135deg, #ffd700, #ffb300); }
+.num-silver { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); }
+.num-bronze { background: linear-gradient(135deg, #cd7f32, #b8860b); }
+.num-normal { background: linear-gradient(135deg, #b8a9cf, #9b8bc0); }
+.rank-sidebar .rank-name { flex: 1; font-size: 11px; font-weight: 600; color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank-sidebar .rank-score { font-size: 10px; color: #7c5cfc; font-weight: bold; flex-shrink: 0; }
+.rank-sidebar .rank-detail { font-size: 9px; color: #999; margin-top: 1px; }
+.rank-sidebar .empty-rank { text-align: center; padding: 18px 6px; color: #999; font-size: 12px; line-height: 1.5; }
+
+/* ========== 提示文字 ========== */
+.hint-text { font-size: 11px; color: #cccdd8; text-align: center; margin-top: 8px; }
+
+/* ========== 答题动画层 ========== */
+.confetti-canvas {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 200;
+}
+
+/* ========== 响应式适配 ========== */
+@media (max-width: 400px) {
+    .option-emoji { font-size: 24px; }
+    .question-text { font-size: 14px; }
+    .btn-start { width: 190px; height: 50px; font-size: 17px; }
+    .robot-container { width: 165px; height: 165px; }
+}
+@media (min-width: 600px) {
+    .options-grid { gap: 12px; max-width: 480px; }
+    .option-emoji { font-size: 36px; }
+}
+
+/* 手机端：游戏区+排行榜上下排列 */
+@media (max-width: 700px) {
+    #gamePage {
+        flex-direction: column;
+        align-items: center;
+        padding-bottom: 20px;
+    }
+    .rank-sidebar {
+        width: 100%; max-width: 420px; min-width: unset;
+        flex-direction: row; flex-wrap: wrap;
+        padding: 10px 14px; max-height: unset;
+        overflow-y: visible;
+        justify-content: center;
+    }
+    .rank-sidebar-title {
+        width: 100%; margin-bottom: 6px;
+        font-size: 13px;
+    }
+    .rank-sidebar .rank-list {
+        display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
+    }
+    .rank-sidebar .rank-item {
+        width: calc(50% - 4px); padding: 5px 7px;
+        margin-bottom: 0; box-sizing: border-box;
+    }
+}
+
+/* ========== 加载动画 ========== */
+.loading-spinner {
+    width: 36px; height: 36px; border: 4px solid #e0d4ed;
+    border-top-color: #7c5cfc; border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 18px auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="game-container" id="app">
+    <!-- 太空背景装饰（浩瀚卡通星空版） -->
+    <div class="space-bg" id="spaceBg"></div>
+
+    <!-- ====== 开始页面 ====== -->
+    <div class="page active" id="startPage">
+        <div class="game-logo">🚀 宇宙小探索家奔奔</div>
+        <div class="game-subtitle">消消乐闯关 · 探索神秘宇宙 ✨</div>
+
+        <div class="robot-container">
+            <div class="orbit-ring">
+                <span class="orbit-icon">🍒</span>
+                <span class="orbit-icon">⭐</span>
+                <span class="orbit-icon">🪐</span>
+                <span class="orbit-icon">🛰️</span>
+                <span class="orbit-icon">🌙</span>
+                <span class="orbit-icon">☄️</span>
+                <span class="orbit-icon">🚀</span>
+                <span class="orbit-icon">⚙️</span>
+            </div>
+            <div class="robot-body">
+                <!-- 天线 -->
+                <div class="antenna-line"></div>
+                <div class="antenna-flag"><span class="flag-face">😊</span></div>
+                <!-- 樱桃头盔 -->
+                <div class="cherry-helmet">
+                    <div class="helmet-window">
+                        <div class="robot-eye"></div>
+                        <div class="robot-eye"></div>
+                        <div class="robot-blush blush-left"></div>
+                        <div class="robot-blush blush-right"></div>
+                    </div>
+                </div>
+                <!-- 身体 -->
+                <div class="robot-dress">
+                    <div class="dress-collar"></div>
+                    <div class="dress-skirt"></div>
+                    <div class="dress-hem"></div>
+                </div>
+                <div class="robot-arm arm-left"></div>
+                <div class="robot-arm arm-right"></div>
+                <div class="robot-boot boot-left"><div class="boot-thruster"></div></div>
+                <div class="robot-boot boot-right"><div class="boot-thruster"></div></div>
+            </div>
+        </div>
+
+        <button class="btn-start" id="btnStart" onclick="startGame()">开始闯关</button>
+        <div class="hint-text">🎮 点击图案消除答案 · 每组3题挑战</div>
+    </div>
+
+    <!-- ====== 游戏主界面（左游戏 + 右排行榜） ====== -->
+    <div class="page" id="gamePage">
+        <div class="game-main">
+        <div class="game-header">
+            <div class="mini-robot" id="miniRobot" onclick="toggleMusic()">
+                <span class="mini-robot-face">🤖</span>
+            </div>
+            <div class="header-info">
+                <div class="info-badge" id="roundBadge">第 1 组</div>
+                <div class="info-badge" id="scoreBadge">⭐ 0题</div>
+            </div>
+        </div>
+
+        <div class="question-area">
+            <div class="question-label" id="qLabel">基础题 · 第 1/3 题</div>
+            <div class="question-text" id="qText">加载中...</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+
+        <div class="options-grid" id="optionsGrid"></div>
+
+        <div class="action-area">
+            <button class="btn-action btn-confirm" id="btnConfirm" onclick="confirmAnswer()">确认提交</button>
+            <button class="btn-action btn-reset" onclick="resetSelection()">重选</button>
+        </div>
+
+        <div class="feedback-msg" id="feedbackMsg"></div>
+        </div>
+
+        <!-- 右侧排行榜面板 -->
+        <aside class="rank-sidebar" id="rankSidebar">
+            <div class="rank-sidebar-title">🏆 宇宙探索家排行榜</div>
+            <ul class="rank-list" id="rankList"></ul>
+        </aside>
+    </div>
+
+    <!-- ====== 结果页面 ====== -->
+    <div class="page" id="resultPage">
+        <div class="result-title" id="resultTitle">🎉 闯关成功！</div>
+        <div class="result-subtitle" id="resultSub">你真棒！继续挑战吧～</div>
+
+        <div class="medal-display" id="medalDisplay" style="display:none;">
+            <div class="medal-icon" id="medalIcon">🌟</div>
+            <div class="medal-text" id="medalText">宇宙小探索家荣誉徽章</div>
+        </div>
+
+        <div class="result-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="statCorrect">0</div>
+                <div class="stat-label">答对题目</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statRound">1</div>
+                <div class="stat-label">闯关组数</div>
+            </div>
+        </div>
+
+        <div class="result-buttons">
+            <button class="btn-result btn-next" onclick="nextRound()">🚀 继续下一组</button>
+            <button class="btn-result btn-rank" onclick="switchPage('gamePage')">🏆 查看排行榜</button>
+            <button class="btn-result btn-back" onclick="backToStart()">🏠 返回首页</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ================================================================
+//  一、简化版题库定义（15道·适配1-3年级低龄认知）
+// ================================================================
+const QUESTION_BANK = [
+    // ====== 基础难度（5题，固定随机抽2题/每组）=====
+    {
+        difficulty: 'basic',
+        question: '请消除天上的星球',
+        options: ['地球','大树','月亮','火星','小花'],
+        emojis: ['🌍','🌳','🌙','🔴','🌸'],
+        answers: ['地球','月亮','火星']
+    },
+    {
+        difficulty: 'basic',
+        question: '消除夜晚天空会发光的东西',
+        options: ['星星','太阳','路灯','月亮','云朵'],
+        emojis: ['⭐','☀️','💡','🌙','☁️'],
+        answers: ['星星','月亮']
+    },
+    {
+        difficulty: 'basic',
+        question: '消除飞向太空的工具',
+        options: ['火箭','汽车','宇宙飞船','飞机'],
+        emojis: ['🚀','🚗','🛸','✈️'],
+        answers: ['火箭','宇宙飞船']
+    },
+    {
+        difficulty: 'basic',
+        question: '消除太空中的星体',
+        options: ['流星','小鸟','太阳','风筝','陨石'],
+        emojis: ['☄️','🐦','☀️','🪁','🌑'],
+        answers: ['流星','太阳','陨石']
+    },
+    {
+        difficulty: 'basic',
+        question: '消除围绕地球转动的事物',
+        options: ['月亮','人造卫星','自行车','空间站','风筝'],
+        emojis: ['🌙','🛰️','🚲','🏠','🪁'],
+        answers: ['月亮','人造卫星','空间站']
+    },
+
+    // ====== 中等/提升难度（5题，提升题池）=====
+    {
+        difficulty: 'medium',
+        question: '消除会自己发光的天体',
+        options: ['太阳','月亮','星星','石头','花朵'],
+        emojis: ['☀️','🌙','⭐','🪨','🌺'],
+        answers: ['太阳','星星']
+    },
+    {
+        difficulty: 'medium',
+        question: '消除太空中的星星类物体',
+        options: ['流星','行星','小猫','恒星','小狗'],
+        emojis: ['☄️','🪐','🐱','⭐','🐶'],
+        answers: ['流星','行星','恒星']
+    },
+    {
+        difficulty: 'medium',
+        question: '消除可以在太空做的事情',
+        options: ['太空看星星','太空实验','跑步','太空漫步','画画'],
+        emojis: ['🔭','🔬','🏃','🧑‍🚀','🎨'],
+        answers: ['太空看星星','太空实验','太空漫步']
+    },
+    {
+        difficulty: 'medium',
+        question: '消除离我们很近的天体',
+        options: ['月亮','火星','太阳','桌子','椅子'],
+        emojis: ['🌙','🔴','☀️','🪑','🪑'],
+        answers: ['月亮','火星','太阳']
+    },
+    {
+        difficulty: 'medium',
+        question: '消除只会出现在太空的事物',
+        options: ['星云','星星','雨水','流星','大风'],
+        emojis: ['🌌','⭐','🌧️','☄️','💨'],
+        answers: ['星云','星星','流星']
+    },
+
+    // ====== 进阶难度（5题，备用提升题库，与中等合并随机抽1道提升题）=====
+    {
+        difficulty: 'advanced',
+        question: '消除圆圆的太空星球',
+        options: ['土星','水星','木星','水杯','书本'],
+        emojis: ['🪐','🔵','🟤','🥤','📖'],
+        answers: ['土星','水星','木星']
+    },
+    {
+        difficulty: 'advanced',
+        question: '消除藏在宇宙深处的天体',
+        options: ['小行星','星星','遥远星球','月亮','太阳'],
+        emojis: ['🪨','⭐','🌌','🌙','☀️'],
+        answers: ['小行星','遥远星球']
+    },
+    {
+        difficulty: 'advanced',
+        question: '消除和月亮有关的景象',
+        options: ['月光','月影子','日光','星星光','晚霞'],
+        emojis: ['🌕','🌑','☀️','✨','🌅'],
+        answers: ['月光','月影子']
+    },
+    {
+        difficulty: 'advanced',
+        question: '消除会伤害飞行器的太空物体',
+        options: ['陨石','太空碎片','云朵','小雨','大风'],
+        emojis: ['☄️','🧹','☁️','🌧️','💨'],
+        answers: ['陨石','太空碎片']
+    },
+    {
+        difficulty: 'advanced',
+        question: '消除用来观察星空的工具',
+        options: ['天文望远镜','小镜子','星盘','放大镜','直尺'],
+        emojis: ['🔭','🪞','🧭','🔍','📏'],
+        answers: ['天文望远镜','星盘']
+    }
+];
+
+// ================================================================
+//  二、文字提示话术（答对夸赞 + 答错鼓励）
+// ================================================================
+const PRAISE_WORDS = [
+    '太棒了！你是个小小宇航员！🚀',
+    '答对啦！你真聪明！⭐',
+    '厉害！宇宙知识难不倒你！🌟',
+    '全对！奔奔为你点赞！👏',
+    '正确！你太厉害了！🎉',
+    '好厉害！继续加油哦！💪',
+    '天才！这道题难不住你！🏆',
+    '哇塞！你答对了！太牛了！🎊'
+];
+
+const ENCOURAGE_WORDS = [
+    '没关系，再试一次吧！💪',
+    '别灰心，下次一定行！🌈',
+    '差一点点，仔细想想哦～🤔',
+    '每个宇航员都会犯错！🚀',
+    '加油！奔奔相信你可以的！✨',
+    '别放弃，再想想就能答对啦！🌟',
+    '没事儿，下次选仔细点就好！😊',
+    '失败是成功之母，再来！💫'
+];
+
+// ================================================================
+//  三、全局状态
+// ================================================================
+let gameState = {
+    currentRound: 1,
+    currentQuestionIndex: 0,
+    questionsThisRound: [],
+    correctCount: 0,
+    totalCorrectAllRounds: 0,
+    totalRoundsCompleted: 0,
+    perfectRounds: 0,
+    selectedOptions: new Set(),
+    isAnswering: false,
+    playerName: '',
+    audioEnabled: true
+};
+
+let audioContext = null;
+let bgmOscillator = null;
+let bgmTimer = null;
+
+// ================================================================
+//  四、初始化
+// ================================================================
+function init() {
+    generateSpaceBackground();
+    loadRankData();
+    refreshRankPanel();
+}
+
+// ================================================================
+//  五、生成浩瀚太空背景（升级版）
+// ================================================================
+function generateSpaceBackground() {
+    const bg = document.getElementById('spaceBg');
+
+    // === 1. 彩色星云（4大片）===
+    const nebulaData = [
+        { cls: 'nebula-pink', w: 280, h: 200, x: -5, y: 10 },
+        { cls: 'nebula-blue', w: 320, h: 180, x: 55, y: 55 },
+        { cls: 'nebula-purple', w: 260, h: 220, x: 30, y: -10 },
+        { cls: 'nebula-gold', w: 200, h: 160, x: 70, y: 20 }
+    ];
+    nebulaData.forEach(n => {
+        const el = document.createElement('div');
+        el.className = `nebula ${n.cls}`;
+        el.style.cssText = `left:${n.x}%;top:${n.y}%;width:${n.w}px;height:${n.h}px;`;
+        el.style.animationDelay = (Math.random() * 8) + 's';
+        bg.appendChild(el);
+    });
+
+    // === 2. 大面积发光星星（三层：大/中/小）===
+    // 大星星（8颗）
+    for (let i = 0; i < 8; i++) {
+        const s = document.createElement('div');
+        s.className = 'star-big';
+        s.style.left = Math.random() * 98 + '%';
+        s.style.top = Math.random() * 95 + '%';
+        s.style.width = s.style.height = (4 + Math.random() * 4) + 'px';
+        s.style.animationDelay = (Math.random() * 3) + 's';
+        s.style.boxShadow = `0 0 ${(4+Math.random()*6)}px ${(2+Math.random()*4)}px rgba(255,255,255,0.5)`;
+        bg.appendChild(s);
+    }
+    // 中等星星（25颗）
+    for (let i = 0; i < 25; i++) {
+        const s = document.createElement('div');
+        s.className = 'star-medium';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 98 + '%';
+        s.style.width = s.style.height = (2 + Math.random() * 3) + 'px';
+        s.style.animationDelay = (Math.random() * 2.5) + 's';
+        bg.appendChild(s);
+    }
+    // 微小星星（60颗）
+    for (let i = 0; i < 60; i++) {
+        const s = document.createElement('div');
+        s.className = 'star-tiny';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        s.style.animationDelay = (Math.random() * 1.5) + 's';
+        bg.appendChild(s);
+    }
+
+    // === 3. 弯弯月牙（1个）===
+    const moon = document.createElement('div');
+    moon.className = 'moon-crescent';
+    moon.style.width = '50px'; moon.style.height = '50px';
+    moon.style.right = '12%'; moon.style.top = '8%';
+    bg.appendChild(moon);
+
+    // === 4. 流星轨迹（3条）===
+    for (let i = 0; i < 3; i++) {
+        const st = document.createElement('div');
+        st.className = 'shooting-star';
+        st.style.width = (60 + Math.random() * 80) + 'px';
+        st.style.top = (5 + Math.random() * 30) + '%';
+        st.style.right = (-10 + Math.random() * 20) + '%';
+        st.style.animationDelay = (i * 5 + Math.random() * 4) + 's';
+        st.style.animationDuration = (3 + Math.random() * 3) + 's';
+        bg.appendChild(st);
+    }
+
+    // === 5. 卡通圆滚滚行星 ===
+    // 土星光环
+    const saturn = document.createElement('div');
+    saturn.className = 'cartoon-planet planet-saturn';
+    saturn.style.left = '8%'; saturn.style.bottom = '25%'; saturn.style.animationDelay = '-1s';
+    bg.appendChild(saturn);
+    // 地球
+    const earth = document.createElement('div');
+    earth.className = 'cartoon-planet planet-earth';
+    earth.style.right = '8%'; earth.style.bottom = '12%'; earth.style.animationDelay = '-2.5s';
+    bg.appendChild(earth);
+    // 火星
+    const mars = document.createElement('div');
+    mars.className = 'cartoon-planet planet-mars';
+    mars.style.left = '18%'; mars.style.top = '20%'; mars.style.animationDelay = '-4s';
+    bg.appendChild(mars);
+    // 小月球
+    const moon2 = document.createElement('div');
+    moon2.className = 'cartoon-planet planet-moon';
+    moon2.style.right = '25%'; moon2.style.top = '12%'; moon2.style.animationDelay = '-0.5s';
+    bg.appendChild(moon2);
+
+    // === 6. 可爱飞碟UFO（2个）===
+    for (let i = 0; i < 2; i++) {
+        const ufo = document.createElement('div');
+        ufo.className = 'ufo';
+        ufo.innerHTML = `<div class="ufo-body">
+            <div class="ufo-dome"></div>
+            <div class="ufo-lights"><span></span><span></span><span></span></div>
+        </div>`;
+        ufo.style.left = (15 + i * 60) + '%';
+        ufo.style.top = (40 + (i % 2) * 25) + '%';
+        ufo.style.transform = `scale(${0.7 + Math.random() * 0.5})`;
+        ufo.style.animationDelay = (-i * 3.5) + 's';
+        ufo.style.opacity = 0.3;
+        bg.appendChild(ufo);
+    }
+
+    // === 7. 载人小飞船（1个，横穿画面）===
+    const ship = document.createElement('div');
+    ship.className = 'space-ship';
+    ship.innerHTML = `<div class="ship-body">
+        <div class="ship-window"></div>
+        <div class="ship-flame"></div>
+    </div>`;
+    ship.style.animationDuration = '15s';
+    ship.style.animationDelay = '2s';
+    bg.appendChild(ship);
+
+    // === 8. 人造卫星（1个，轨道运动）===
+    const sat = document.createElement('div');
+    sat.className = 'satellite';
+    sat.innerHTML = `<div class="sat-body">
+        <div class="sat-panel-left"></div>
+        <div class="sat-panel-right"></div>
+        <div class="sat-light"></div>
+    </div>`;
+    sat.style.top = '35%';
+    sat.style.left = '50%';
+    sat.style.animationDelay = '0s';
+    bg.appendChild(sat);
+
+    // === 9. 五彩闪烁光斑 ===
+    const orbColors = ['#ff6bcf','#6bbcff','#ffd166','#6bff6b','#b06bff'];
+    for (let i = 0; i < 8; i++) {
+        const orb = document.createElement('div');
+        orb.className = 'glow-orb';
+        orb.style.left = Math.random() * 90 + '%';
+        orb.style.top = Math.random() * 85 + '%';
+        orb.style.width = orb.style.height = (30 + Math.random() * 60) + 'px';
+        orb.style.background = `radial-gradient(circle, ${orbColors[i % orbColors.length]}33, transparent 70%)`;
+        orb.style.animationDelay = (Math.random() * 4) + 's';
+        bg.appendChild(orb);
+    }
+
+    // === 10. 大面积半透明柔光光斑 ===
+    for (let i = 0; i < 5; i++) {
+        const spot = document.createElement('div');
+        spot.className = 'soft-glow-spot';
+        spot.style.left = Math.random() * 80 + '%';
+        spot.style.top = Math.random() * 80 + '%';
+        spot.style.width = spot.style.height = (80 + Math.random() * 150) + 'px';
+        bg.appendChild(spot);
+    }
+
+    // === 11. 漂浮樱桃/机械装饰元素 ===
+    const floatItems = ['🍒','🍒','⭐','⭐','🪐','🛰️','☄️','🌙','🤖','⚙️','🔧','💫','🌸'];
+    for (let i = 0; i < 14; i++) {
+        const item = document.createElement('div');
+        item.className = 'float-item';
+        item.textContent = floatItems[i % floatItems.length];
+        item.style.left = Math.random() * 100 + '%';
+        item.style.top = Math.random() * 100 + '%';
+        item.style.fontSize = (13 + Math.random() * 18) + 'px';
+        item.style.animationDelay = (Math.random() * 10) + 's';
+        item.style.animationDuration = (10 + Math.random() * 10) + 's';
+        bg.appendChild(item);
+    }
+}
+
+// ================================================================
+//  六、音频系统（Web Audio API 合成音效）
+// ================================================================
+function initAudio() {
+    if (audioContext) return;
+    try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch(e) { console.log('音频不可用'); }
+}
+
+function playClickSound() {
+    if (!gameState.audioEnabled) return;
+    initAudio();
+    try {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, audioContext.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.12);
+        osc.start(audioContext.currentTime);
+        osc.stop(audioContext.currentTime + 0.12);
+    } catch(e) {}
+}
+
+function playCorrectSound() {
+    if (!gameState.audioEnabled) return;
+    initAudio();
+    try {
+        const now = audioContext.currentTime;
+        [523, 659, 784].forEach((freq, i) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.18, now + i * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.28);
+            osc.start(now + i * 0.12);
+            osc.stop(now + i * 0.12 + 0.28);
+        });
+    } catch(e) {}
+}
+
+function playWrongSound() {
+    if (!gameState.audioEnabled) return;
+    initAudio();
+    try {
+        const now = audioContext.currentTime;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(150, now + 0.3);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.start(now);
+        osc.stop(now + 0.35);
+    } catch(e) {}
+}
+
+function playBGM() {
+    if (!gameState.audioEnabled || bgmOscillator) return;
+    initAudio();
+    try {
+        // 梦幻轻旋律（C大调简单音阶循环）
+        const notes = [262, 294, 330, 349, 392, 349, 330, 294, 262, 330, 392, 330];
+        let noteIndex = 0;
+
+        function playNote() {
+            if (!bgmOscillator || !gameState.audioEnabled) return;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.type = 'sine';
+            osc.frequency.value = notes[noteIndex % notes.length];
+            gain.gain.setValueAtTime(0.035, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.45);
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.45);
+            noteIndex++;
+            bgmTimer = setTimeout(playNote, 480);
+        }
+        playNote();
+
+        bgmOscillator = { playing: true };
+    } catch(e) {}
+}
+
+function stopBGM() {
+    if (bgmTimer) { clearTimeout(bgmTimer); bgmTimer = null; }
+    bgmOscillator = null;
+}
+
+function toggleMusic() {
+    gameState.audioEnabled = !gameState.audioEnabled;
+    if (gameState.audioEnabled) {
+        playBGM();
+        showFeedback('🎵 音乐已开启', '');
+    } else {
+        stopBGM();
+        showFeedback('🔇 音乐已关闭', '');
+    }
+    playClickSound();
+}
+
+// ================================================================
+//  七、核心游戏流程
+// ================================================================
+
+// --- 抽取本组3道题（2基础+1提升）---
+function selectQuestionsForRound() {
+    const basicQs = QUESTION_BANK.filter(q => q.difficulty === 'basic');
+    const mediumQs = QUESTION_BANK.filter(q => q.difficulty === 'medium');
+    const advancedQs = QUESTION_BANK.filter(q => q.difficulty === 'advanced');
+
+    // 随机抽2道基础题
+    const shuffledBasic = [...basicQs].sort(() => Math.random() - 0.5).slice(0, 2);
+
+    // 从中等+进阶中随机抽1道提升题
+    const boostPool = [...mediumQs, ...advancedQs].sort(() => Math.random() - 0.5).slice(0, 1);
+
+    const roundQuestions = [...shuffledBasic, ...boostPool];
+
+    // 打乱顺序
+    return roundQuestions.sort(() => Math.random() - 0.5);
+}
+
+function startGame() {
+    playClickSound();
+    initAudio();
+
+    gameState.currentQuestionIndex = 0;
+    gameState.correctCount = 0;
+    gameState.selectedOptions = new Set();
+    gameState.isAnswering = false;
+    gameState.questionsThisRound = selectQuestionsForRound();
+
+    switchPage('gamePage');
+    updateGameHeader();
+    renderQuestion();
+
+    setTimeout(() => playBGM(), 500);
+}
+
+function renderQuestion() {
+    const q = gameState.questionsThisRound[gameState.currentQuestionIndex];
+    if (!q) return;
+
+    const diffLabel = q.difficulty === 'basic' ? '基础题' :
+                       q.difficulty === 'medium' ? '提升题' : '进阶题';
+
+    document.getElementById('qLabel').textContent =
+        `${diffLabel} · 第 ${gameState.currentQuestionIndex + 1}/3 题`;
+    document.getElementById('qText').textContent = q.question;
+    document.getElementById('progressFill').style.width =
+        ((gameState.currentQuestionIndex) / 3 * 100) + '%';
+
+    gameState.selectedOptions.clear();
+    document.getElementById('feedbackMsg').innerHTML = '';
+
+    const grid = document.getElementById('optionsGrid');
+    grid.innerHTML = '';
+
+    q.options.forEach((opt, idx) => {
+        const card = document.createElement('div');
+        card.className = 'option-card';
+        card.dataset.index = idx;
+        card.dataset.value = opt;
+        card.innerHTML = `
+            <div class="option-emoji">${q.emojis[idx]}</div>
+            <div class="option-text">${opt}</div>
+        `;
+        card.onclick = () => toggleOption(card, opt);
+        grid.appendChild(card);
+    });
+}
+
+function toggleOption(card, value) {
+    if (gameState.isAnswering) return;
+    playClickSound();
+
+    if (gameState.selectedOptions.has(value)) {
+        gameState.selectedOptions.delete(value);
+        card.classList.remove('selected');
+    } else {
+        gameState.selectedOptions.add(value);
+        card.classList.add('selected');
+    }
+}
+
+function resetSelection() {
+    playClickSound();
+    gameState.selectedOptions.clear();
+    document.querySelectorAll('.option-card').forEach(card => {
+        card.classList.remove('selected', 'correct', 'wrong');
+    });
+    document.getElementById('feedbackMsg').innerHTML = '';
+}
+
+function confirmAnswer() {
+    if (gameState.isAnswering || gameState.selectedOptions.size === 0) {
+        if (gameState.selectedOptions.size === 0) {
+            showFeedback('请先选择要消除的图案哦～', '');
+        }
+        return;
+    }
+
+    gameState.isAnswering = true;
+    const q = gameState.questionsThisRound[gameState.currentQuestionIndex];
+    const selected = Array.from(gameState.selectedOptions);
+    const correct = q.answers;
+
+    const isCorrect =
+        selected.length === correct.length &&
+        selected.every(v => correct.includes(v));
+
+    const cards = document.querySelectorAll('.option-card');
+
+    if (isCorrect) {
+        // 答对 → 文字鼓励 + 音效
+        playCorrectSound();
+        gameState.correctCount++;
+        cards.forEach(card => {
+            if (gameState.selectedOptions.has(card.dataset.value)) {
+                card.classList.add('correct');
+            }
+        });
+
+        const praise = PRAISE_WORDS[Math.floor(Math.random() * PRAISE_WORDS.length)];
+        showFeedback(praise, 'correct-msg');
+
+        setTimeout(() => nextQuestion(), 1800);
+    } else {
+        // 答错 → 文字提示 + 音效
+        playWrongSound();
+        cards.forEach(card => {
+            if (gameState.selectedOptions.has(card.dataset.value)) {
+                card.classList.add('wrong');
+            }
+        });
+
+        const enc = ENCOURAGE_WORDS[Math.floor(Math.random() * ENCOURAGE_WORDS.length)];
+        showFeedback(enc, 'wrong-msg');
+
+        setTimeout(() => nextQuestion(), 2000);
+    }
+}
+
+function nextQuestion() {
+    gameState.currentQuestionIndex++;
+
+    if (gameState.currentQuestionIndex >= 3) {
+        finishRound();
+    } else {
+        gameState.isAnswering = false;
+        updateGameHeader();
+        renderQuestion();
+    }
+}
+
+function finishRound() {
+    stopBGM();
+    gameState.totalRoundsCompleted++;
+    gameState.totalCorrectAllRounds += gameState.correctCount;
+    if (gameState.correctCount >= 3) gameState.perfectRounds++;
+
+    saveScore();
+
+    const passed = gameState.correctCount >= 2;
+
+    document.getElementById('resultTitle').textContent =
+        passed ? '🎉 闯关成功！' : '💪 再接再厉！';
+    document.getElementById('resultTitle').className = 'result-title ' + (passed ? 'pass' : 'fail');
+    document.getElementById('resultSub').textContent =
+        passed ? '你真棒！继续探索更多宇宙奥秘吧～' : '别灰心，下一组一定能过关！';
+
+    document.getElementById('statCorrect').textContent = gameState.correctCount + '/3';
+    document.getElementById('statRound').textContent = gameState.totalRoundsCompleted;
+
+    const medalDisplay = document.getElementById('medalDisplay');
+    if (gameState.correctCount >= 3) {
+        medalDisplay.style.display = 'block';
+        document.getElementById('medalIcon').textContent = '🌟';
+        document.getElementById('medalText').textContent = '宇宙小探索家荣誉徽章';
+        fireConfetti();
+    } else {
+        medalDisplay.style.display = 'none';
+    }
+
+    switchPage('resultPage');
+}
+
+function nextRound() {
+    playClickSound();
+    gameState.currentRound++;
+    gameState.currentQuestionIndex = 0;
+    gameState.correctCount = 0;
+    gameState.selectedOptions = new Set();
+    gameState.isAnswering = false;
+    gameState.questionsThisRound = selectQuestionsForRound();
+
+    switchPage('gamePage');
+    updateGameHeader();
+    renderQuestion();
+    setTimeout(() => playBGM(), 300);
+}
+
+function backToStart() {
+    playClickSound();
+    stopBGM();
+    switchPage('startPage');
+}
+
+// ================================================================
+//  八、UI 辅助函数
+// ================================================================
+function switchPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+    // 切到游戏页时刷新排行榜
+    if (pageId === 'gamePage') refreshRankPanel();
+}
+
+function updateGameHeader() {
+    document.getElementById('roundBadge').textContent = `第 ${gameState.currentRound} 组`;
+    document.getElementById('scoreBadge').textContent = `⭐ ${gameState.correctCount}题`;
+}
+
+function showFeedback(text, extraClass) {
+    const el = document.getElementById('feedbackMsg');
+    el.innerHTML = `<div class="feedback-bubble ${extraClass}">${text}</div>`;
+}
+
+// ================================================================
+//  八-B、右侧排行榜面板（常驻渲染）
+// ================================================================
+function refreshRankPanel() {
+    const ranks = loadRankData();
+    const listEl = document.getElementById('rankList');
+    if (!listEl) return;
+
+    if (ranks.length === 0) {
+        listEl.innerHTML = '<li class="empty-rank">还没有探索记录～<br>快来成为第一名吧！🚀</li>';
+    } else {
+        listEl.innerHTML = ranks.slice(0, 10).map((r, i) => {
+            let numClass = 'num-normal';
+            if (i === 0) numClass = 'num-gold';
+            else if (i === 1) numClass = 'num-silver';
+            else if (i === 2) numClass = 'num-bronze';
+
+            return `<li class="rank-item">
+                <div class="rank-num ${numClass}">${i + 1}</div>
+                <div>
+                    <div class="rank-name">${r.name}</div>
+                    <div class="rank-detail">通关${r.rounds}组 · 答对${r.totalCorrect}题</div>
+                </div>
+                <div class="rank-score">${r.rounds}组</div>
+            </li>`;
+        }).join('');
+    }
+}
+
+function showBriefToast(msg) {
+    const toast = document.createElement('div');
+    toast.textContent = msg;
+    toast.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+        background: rgba(91,58,126,0.9); color: white; padding: 14px 28px;
+        border-radius: 20px; font-size: 15px; font-weight: bold;
+        z-index: 500; animation: bubbleIn 0.3s ease-out;
+        pointer-events: none;
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+// ================================================================
+//  九、排行榜系统
+// ================================================================
+function getRankKey() { return 'benben_space_rank_v2'; }
+
+function loadRankData() {
+    try {
+        const raw = localStorage.getItem(getRankKey());
+        return raw ? JSON.parse(raw) : [];
+    } catch(e) { return []; }
+}
+
+function saveScore() {
+    const ranks = loadRankData();
+    const name = gameState.playerName || `探索家${Date.now().toString().slice(-4)}`;
+
+    const existingIdx = ranks.findIndex(r => r.name === name);
+    const record = {
+        name: name,
+        rounds: gameState.totalRoundsCompleted,
+        totalCorrect: gameState.totalCorrectAllRounds,
+        perfectCount: gameState.perfectRounds,
+        lastUpdate: new Date().toLocaleString()
+    };
+
+    if (existingIdx >= 0) {
+        if (gameState.totalRoundsCompleted > ranks[existingIdx].rounds ||
+            (gameState.totalRoundsCompleted === ranks[existingIdx].rounds &&
+             gameState.totalCorrectAllRounds > ranks[existingIdx].totalCorrect)) {
+            ranks[existingIdx] = record;
+        }
+    } else {
+        ranks.push(record);
+    }
+
+    ranks.sort((a, b) => {
+        if (b.rounds !== a.rounds) return b.rounds - a.rounds;
+        if (b.totalCorrect !== a.totalCorrect) return b.totalCorrect - a.totalCorrect;
+        return b.perfectCount - a.perfectCount;
+    });
+
+    localStorage.setItem(getRankKey(), JSON.stringify(ranks.slice(0, 50)));
+}
+
+function showRank() {
+    playClickSound();
+    refreshRankPanel();
+}
+
+// closeRank 不再需要，已移除弹窗
+
+// ================================================================
+//  十、彩带特效
+// ================================================================
+function fireConfetti() {
+    const canvas = document.createElement('canvas');
+    canvas.className = 'confetti-canvas';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext('2d');
+    const particles = [];
+    const colors = ['#ffd700','#ff6b9d','#7c5cfc','#52c97a','#00bcd4','#ff9800'];
+
+    for (let i = 0; i < 80; i++) {
+        particles.push({
+            x: canvas.width / 2, y: canvas.height / 2,
+            vx: (Math.random() - 0.5) * 15,
+            vy: (Math.random() - 1.5) * 12,
+            size: 4 + Math.random() * 8,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rs: (Math.random() - 0.5) * 10,
+            life: 1
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        particles.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.vy += 0.25;
+            p.rotation += p.rs; p.life -= 0.012;
+            if (p.life > 0) { alive = true;
+                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180);
+                ctx.globalAlpha = p.life; ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size * 0.6);
+                ctx.restore();
+            }
+        });
+        if (alive) requestAnimationFrame(animate);
+        else canvas.remove();
+    }
+    animate();
+}
+
+// ================================================================
+//  十一、启动
+// ================================================================
+window.addEventListener('load', init);
+
+document.addEventListener('click', function _initOnClick() {
+    if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+    document.removeEventListener('click', _initOnClick);
+}, { once: true });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>自然小博士奔奔</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #e8f5e9;
+}
+
+/* ===== 全屏背景 ===== */
+#bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+#bg-layer svg { width: 100%; height: 100%; }
+
+/* ===== 主容器 ===== */
+#app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 14px 36px;
+}
+
+/* ===== 标题 ===== */
+.top-bar {
+  width: 100%;
+  max-width: 460px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.top-bar h1 {
+  font-size: 28px;
+  font-weight: 900;
+  color: #2e7d32;
+  text-shadow: 0 2px 0 #e8f5e9, 0 4px 8px rgba(46,125,50,.2);
+  letter-spacing: 2px;
+}
+
+/* ===== 机器人头像 ===== */
+.avatar-area {
+  width: 140px;
+  height: 140px;
+  margin: 6px auto 14px;
+  filter: drop-shadow(0 8px 24px rgba(76,175,80,.35));
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-9px); }
+}
+
+/* ===== 卡片 ===== */
+.card {
+  background: rgba(255,255,255,.92);
+  border-radius: 24px;
+  padding: 22px 20px 18px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 8px 40px rgba(76,175,80,.18), 0 2px 8px rgba(0,0,0,.06);
+  backdrop-filter: blur(6px);
+}
+
+/* ===== 欢迎屏 ===== */
+.welcome-msg {
+  text-align: center;
+  color: #33691e;
+  font-size: 15px;
+  line-height: 1.85;
+  margin-bottom: 12px;
+}
+.welcome-msg strong { color: #2e7d32; font-size: 16px; }
+
+.current-group-hint {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 900;
+  color: #2e7d32;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg,#e8f5e9,#c8e6c9);
+  border-radius: 16px;
+  border: 2px dashed #81c784;
+  letter-spacing: 1px;
+}
+
+.rule-tip {
+  text-align: center;
+  font-size: 14px;
+  color: #558b2f;
+  margin-bottom: 16px;
+  padding: 8px 16px;
+  background: rgba(255,255,255,.6);
+  border-radius: 20px;
+  display: inline-block;
+  width: 100%;
+}
+
+/* ===== 按钮 ===== */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: transform .12s, box-shadow .12s;
+  outline: none;
+}
+.btn:active { transform: scale(.97); }
+
+.btn-start  { background: linear-gradient(135deg,#66bb6a,#43a047); color:#fff; box-shadow:0 6px 20px rgba(67,160,71,.4); }
+.btn-start:hover { box-shadow:0 8px 28px rgba(67,160,71,.55); }
+.btn-next   { background: linear-gradient(135deg,#42a5f5,#1e88e5); color:#fff; box-shadow:0 6px 20px rgba(30,136,229,.35); margin-top:10px; }
+.btn-again  { background: linear-gradient(135deg,#66bb6a,#43a047); color:#fff; box-shadow:0 6px 20px rgba(67,160,71,.35); margin-top:10px; }
+.btn-reset  { background: linear-gradient(135deg,#ffa726,#ef6c00); color:#fff; box-shadow:0 6px 20px rgba(239,108,0,.35); margin-top:10px; }
+.btn-share  { background: linear-gradient(135deg,#ab47bc,#7b1fa2); color:#fff; box-shadow:0 6px 20px rgba(123,31,162,.35); margin-top:8px; }
+.btn-submit { background: linear-gradient(135deg,#ff7043,#e64a19); color:#fff; box-shadow:0 6px 20px rgba(230,74,25,.4); }
+
+/* ===== 答题屏 ===== */
+.group-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg,#66bb6a,#43a047);
+  color: #fff;
+  border-radius: 30px;
+  padding: 6px 16px;
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  box-shadow: 0 3px 12px rgba(67,160,71,.3);
+}
+
+.progress-bar-wrap { margin-bottom: 12px; }
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #558b2f;
+  margin-bottom: 5px;
+}
+.progress-bar { height: 8px; background: #c8e6c9; border-radius: 8px; overflow: hidden; }
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg,#66bb6a,#43a047);
+  border-radius: 8px;
+  transition: width .4s ease;
+}
+
+.difficulty-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.diff-basic    { background:#dcedc8; color:#33691e; }
+.diff-medium   { background:#fff9c4; color:#f57f17; }
+.diff-advanced { background:#ffcdd2; color:#c62828; }
+
+.question-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1b5e20;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  min-height: 44px;
+  text-align: center;
+}
+
+.question-hint {
+  font-size: 12px;
+  color: #689f38;
+  text-align: center;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+/* ===== 图标消除网格 ===== */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.icon-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 8px 10px;
+  border: 3px solid #c8e6c9;
+  border-radius: 18px;
+  background: #f1f8e9;
+  cursor: pointer;
+  transition: all .18s;
+  min-height: 90px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-card:active { transform: scale(.95); }
+
+.icon-card .icon-emoji {
+  font-size: 40px;
+  line-height: 1;
+  margin-bottom: 4px;
+  transition: transform .18s;
+}
+
+.icon-card .icon-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #558b2f;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* 选中状态 - 消消乐高亮 */
+.icon-card.selected {
+  border-color: #ff7043;
+  background: #fff3e0;
+  box-shadow: 0 4px 16px rgba(255,112,67,.35);
+  transform: scale(1.05);
+}
+.icon-card.selected .icon-emoji {
+  transform: scale(1.12);
+}
+.icon-card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  background: #ff7043;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: popIn .25s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* ===== 反馈弹层 ===== */
+.feedback-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.feedback-overlay.show { opacity:1; pointer-events:all; }
+.feedback-card {
+  background:#fff; border-radius:28px;
+  padding: 30px 24px 22px;
+  text-align:center; width:86%; max-width:340px;
+  box-shadow:0 16px 60px rgba(0,0,0,.2);
+  transform:scale(.85); transition:transform .25s;
+}
+.feedback-overlay.show .feedback-card { transform:scale(1); }
+.fb-emoji { font-size:54px; display:block; margin-bottom:10px; animation:bounce .5s ease; }
+@keyframes bounce {
+  0%,100% { transform:scale(1); }
+  40%      { transform:scale(1.25); }
+  70%      { transform:scale(.9); }
+}
+.fb-title { font-size:22px; font-weight:900; margin-bottom:6px; }
+.fb-title.ok  { color:#43a047; }
+.fb-title.no  { color:#e53935; }
+.fb-correct-list { font-size:13px; color:#558b2f; margin-bottom:4px; line-height:1.7; }
+.fb-body { font-size:14px; color:#666; margin-bottom:18px; line-height:1.6; }
+.fb-btn {
+  background:linear-gradient(135deg,#66bb6a,#43a047);
+  color:#fff; border:none; border-radius:14px;
+  padding:10px 36px; font-size:16px; font-weight:800;
+  cursor:pointer; box-shadow:0 4px 14px rgba(67,160,71,.4);
+  transition:transform .1s;
+}
+.fb-btn:active { transform:scale(.96); }
+
+/* ===== 结算屏 ===== */
+.result-top { text-align:center; margin-bottom:14px; }
+.result-avatar { font-size:64px; display:block; margin-bottom:4px; }
+.result-name { font-size:18px; font-weight:800; color:#1b5e20; }
+.result-score-wrap { display:flex; justify-content:center; gap:8px; margin:10px 0 14px; }
+.score-dot {
+  width:40px; height:40px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:900; border:3px solid transparent;
+}
+.score-dot.ok  { background:#e8f5e9; border-color:#66bb6a; color:#43a047; }
+.score-dot.bad { background:#ffebee; border-color:#ef5350; color:#e53935; }
+.result-comment {
+  font-size:14px; font-weight:700; text-align:center;
+  margin-bottom:12px; padding:10px 12px; border-radius:14px;
+  background:#f1f8e9; color:#33691e; line-height:1.6;
+}
+.badge-display {
+  display: inline-block;
+  padding: 10px 20px;
+  background: linear-gradient(135deg,#ffd54f,#ffb300);
+  color: #5d4037;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 800;
+  margin: 8px 0;
+  box-shadow: 0 3px 12px rgba(255,179,0,.4);
+  animation: badgePop .6s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes badgePop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===== 右侧榜单面板 ===== */
+.lb-panel {
+  position: fixed;
+  right: 0; top: 0;
+  width: 240px; height: 100%;
+  background: rgba(255,255,255,.96);
+  box-shadow: -4px 0 30px rgba(0,0,0,.1);
+  z-index: 50;
+  transform: translateX(100%);
+  transition: transform .3s ease;
+  padding: 18px 14px;
+  overflow-y: auto;
+  backdrop-filter: blur(8px);
+}
+.lb-panel.open { transform: translateX(0); }
+
+.lb-panel-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #33691e;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.lb-panel-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none; border: none;
+  font-size: 20px; cursor: pointer;
+  color: #81c784; padding: 4px 8px;
+  border-radius: 6px;
+}
+.lb-panel-close:hover { background: #e8f5e9; }
+
+.lb-panel-list { list-style: none; padding: 0; }
+.lb-panel-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f1f8e9;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #33691e;
+}
+.lb-panel-item:nth-child(1) { background:linear-gradient(90deg,#fff9c4,#fff176); }
+.lb-panel-item:nth-child(2) { background:#e8f5e9; }
+.lb-panel-item:nth-child(3) { background:linear-gradient(90deg,#f1f8e9,#dcedc8); }
+.lb-panel-rank { font-size: 16px; width: 22px; text-align: center; }
+.lb-panel-name { flex: 1; font-weight: 700; }
+.lb-panel-score { font-weight: 800; color: #43a047; font-size: 13px; }
+.lb-panel-empty { text-align: center; color: #81c784; font-size: 12px; padding: 16px 0; }
+
+/* 榜单切换按钮 */
+.lb-toggle {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 51;
+  background: linear-gradient(135deg,#66bb6a,#43a047);
+  color: #fff;
+  border: none;
+  border-radius: 12px 0 0 12px;
+  padding: 14px 8px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: -3px 0 16px rgba(67,160,71,.3);
+  writing-mode: vertical-lr;
+  letter-spacing: 3px;
+  transition: transform .3s ease;
+}
+.lb-toggle.shift { transform: translateY(-50%) translateX(-240px); }
+
+/* ===== 音乐按钮 ===== */
+.music-btn {
+  position: fixed;
+  bottom: 20px; left: 16px;
+  z-index: 50;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.85);
+  border: 2px solid #81c784;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,.1);
+  font-size: 20px;
+  transition: transform .15s;
+}
+.music-btn:active { transform: scale(.9); }
+.music-btn.off { opacity: .55; }
+
+/* ===== 彩花 ===== */
+.confetti { position:fixed; inset:0; z-index:200; pointer-events:none; }
+
+/* ===== 分享提示 ===== */
+.share-toast {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(.8);
+  background: #333;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: all .3s;
+}
+.share-toast.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+
+.hidden { display:none !important; }
+
+@media(max-width:420px){
+  .top-bar h1 { font-size:23px; }
+  .avatar-area { width:110px; height:110px; }
+  .question-text { font-size:16px; }
+  .icon-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .icon-card { padding: 12px 6px 8px; min-height: 78px; }
+  .icon-card .icon-emoji { font-size: 32px; }
+  .lb-panel { width: 210px; }
+  .lb-toggle.shift { transform: translateY(-50%) translateX(-210px); }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 全屏背景 ===== -->
+<div id="bg-layer">
+<svg viewBox="0 0 1200 750" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#87CEEB"/>
+      <stop offset="55%" stop-color="#B8E6F0"/>
+      <stop offset="100%" stop-color="#E8F5E9"/>
+    </linearGradient>
+    <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#81C784"/>
+      <stop offset="40%" stop-color="#66BB6A"/>
+      <stop offset="100%" stop-color="#4CAF50"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF9C4"/>
+      <stop offset="60%" stop-color="#FFF176" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#FFF176" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur1"><feGaussianBlur stdDeviation="3"/></filter>
+    <filter id="blur2"><feGaussianBlur stdDeviation="1.5"/></filter>
+  </defs>
+  <!-- 天空 -->
+  <rect width="1200" height="750" fill="url(#skyGrad)"/>
+  <!-- 太阳光晕 -->
+  <circle cx="1050" cy="100" r="120" fill="url(#sunGlow)"/>
+  <circle cx="1050" cy="100" r="35" fill="#FFD54F"/>
+  <circle cx="1050" cy="100" r="28" fill="#FFEB3B"/>
+  <!-- 云朵 -->
+  <g opacity="0.85">
+    <ellipse cx="180" cy="90" rx="65" ry="28" fill="#fff"/>
+    <ellipse cx="220" cy="78" rx="50" ry="24" fill="#fff"/>
+    <ellipse cx="150" cy="82" rx="40" ry="20" fill="#fff"/>
+  </g>
+  <g opacity="0.7">
+    <ellipse cx="480" cy="60" rx="55" ry="22" fill="#fff"/>
+    <ellipse cx="515" cy="50" rx="42" ry="18" fill="#fff"/>
+    <ellipse cx="450" cy="52" rx="35" ry="16" fill="#fff"/>
+  </g>
+  <g opacity="0.6">
+    <ellipse cx="780" cy="130" rx="48" ry="20" fill="#fff"/>
+    <ellipse cx="810" cy="120" rx="38" ry="16" fill="#fff"/>
+  </g>
+  <!-- 彩虹 -->
+  <path d="M600,550 Q400,150 600,100" fill="none" stroke="#FF6B6B" stroke-width="6" opacity="0.3"/>
+  <path d="M600,556 Q410,156 600,106" fill="none" stroke="#FFA726" stroke-width="5" opacity="0.3"/>
+  <path d="M600,562 Q420,162 600,112" fill="none" stroke="#FFEE58" stroke-width="5" opacity="0.28"/>
+  <path d="M600,568 Q430,168 600,118" fill="none" stroke="#66BB6A" stroke-width="5" opacity="0.28"/>
+  <path d="M600,574 Q440,174 600,124" fill="none" stroke="#42A5F5" stroke-width="5" opacity="0.25"/>
+  <path d="M600,580 Q450,180 600,130" fill="none" stroke="#AB47BC" stroke-width="5" opacity="0.22"/>
+  <!-- 小鸟 -->
+  <g transform="translate(320,80)" opacity="0.7">
+    <path d="M0,8 Q8,-4 16,0 Q24,-4 32,8" fill="none" stroke="#5D4037" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M0,0 Q8,-10 16,-4 Q24,-10 32,0" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  </g>
+  <g transform="translate(520,95)" opacity="0.6">
+    <path d="M0,6 Q6,-3 12,0 Q18,-3 24,6" fill="none" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- 蝴蝶 -->
+  <g transform="translate(680,170)" opacity="0.7">
+    <ellipse cx="-8" cy="-2" rx="8" ry="5" fill="#FF80AB" transform="rotate(-20,-8,-2)"/>
+    <ellipse cx="8" cy="-2" rx="8" ry="5" fill="#FF80AB" transform="rotate(20,8,-2)"/>
+    <ellipse cx="-5" cy="5" rx="5" ry="3.5" fill="#F48FB1" transform="rotate(-10,-5,5)"/>
+    <ellipse cx="5" cy="5" rx="5" ry="3.5" fill="#F48FB1" transform="rotate(10,5,5)"/>
+    <line x1="0" y1="-4" x2="0" y2="8" stroke="#5D4037" stroke-width="1.5"/>
+  </g>
+  <g transform="translate(200,200)" opacity="0.5">
+    <ellipse cx="-6" cy="-1" rx="6" ry="4" fill="#BA68C8" transform="rotate(-25,-6,-1)"/>
+    <ellipse cx="6" cy="-1" rx="6" ry="4" fill="#BA68C8" transform="rotate(25,6,-1)"/>
+    <ellipse cx="-4" cy="4" rx="4" ry="3" fill="#CE93D8" transform="rotate(-10,-4,4)"/>
+    <ellipse cx="4" cy="4" rx="4" ry="3" fill="#CE93D8" transform="rotate(10,4,4)"/>
+    <line x1="0" y1="-3" x2="0" y2="6" stroke="#5D4037" stroke-width="1.2"/>
+  </g>
+  <!-- 地面 -->
+  <rect x="0" y="460" width="1200" height="290" fill="url(#groundGrad)"/>
+  <!-- 地面波浪 -->
+  <path d="M0,460 Q150,440 300,460 Q450,480 600,460 Q750,440 900,460 Q1050,480 1200,460" fill="#81C784"/>
+  <!-- 小溪 -->
+  <path d="M-50,650 Q200,620 400,655 Q600,690 800,640 Q1000,600 1250,660 L1250,760 L-50,760Z" fill="#64B5F6" opacity="0.55"/>
+  <path d="M-50,680 Q200,660 400,690 Q600,720 800,670 Q1000,640 1250,690 L1250,740 L-50,740Z" fill="#42A5F5" opacity="0.4"/>
+  <!-- 小桥 -->
+  <path d="M340,650 Q380,620 420,650" fill="none" stroke="#8D6E63" stroke-width="6" stroke-linecap="round"/>
+  <line x1="342" y1="648" x2="342" y2="636" stroke="#8D6E63" stroke-width="3"/>
+  <line x1="418" y1="648" x2="418" y2="636" stroke="#8D6E63" stroke-width="3"/>
+  <!-- 大树 -->
+  <rect x="132" y="340" width="36" height="130" rx="10" fill="#8D6E63"/>
+  <ellipse cx="150" cy="310" rx="75" ry="65" fill="#4CAF50" opacity="0.9"/>
+  <ellipse cx="120" cy="335" rx="55" ry="45" fill="#66BB6A" opacity="0.85"/>
+  <ellipse cx="180" cy="330" rx="50" ry="42" fill="#43A047" opacity="0.8"/>
+  <ellipse cx="150" cy="280" rx="45" ry="38" fill="#81C784" opacity="0.75"/>
+  <!-- 第二棵树 -->
+  <rect x="880" y="370" width="28" height="100" rx="8" fill="#8D6E63"/>
+  <ellipse cx="894" cy="345" rx="60" ry="52" fill="#66BB6A" opacity="0.85"/>
+  <ellipse cx="870" cy="365" rx="42" ry="35" fill="#81C784" opacity="0.8"/>
+  <ellipse cx="918" cy="358" rx="40" ry="33" fill="#4CAF50" opacity="0.75"/>
+  <ellipse cx="894" cy="320" rx="35" ry="30" fill="#A5D6A7" opacity="0.7"/>
+  <!-- 小树 -->
+  <rect x="740" y="400" width="16" height="65" rx="6" fill="#A1887F"/>
+  <ellipse cx="748" cy="390" rx="35" ry="30" fill="#81C784" opacity="0.8"/>
+  <ellipse cx="748" cy="375" rx="28" ry="24" fill="#A5D6A7" opacity="0.75"/>
+  <!-- 花朵 -->
+  <g transform="translate(250,470)">
+    <line x1="0" y1="0" x2="0" y2="25" stroke="#66BB6A" stroke-width="2.5"/>
+    <circle cx="0" cy="-5" r="8" fill="#FF80AB"/>
+    <circle cx="0" cy="-5" r="3" fill="#FFEB3B"/>
+  </g>
+  <g transform="translate(290,490)">
+    <line x1="0" y1="0" x2="0" y2="20" stroke="#4CAF50" stroke-width="2"/>
+    <circle cx="0" cy="-4" r="7" fill="#CE93D8"/>
+    <circle cx="0" cy="-4" r="2.5" fill="#FFF176"/>
+  </g>
+  <g transform="translate(560,475)">
+    <line x1="0" y1="0" x2="0" y2="22" stroke="#66BB6A" stroke-width="2.5"/>
+    <circle cx="0" cy="-5" r="9" fill="#FFAB91"/>
+    <circle cx="0" cy="-5" r="3.5" fill="#FFEE58"/>
+  </g>
+  <g transform="translate(630,495)">
+    <line x1="0" y1="0" x2="0" y2="18" stroke="#4CAF50" stroke-width="2"/>
+    <circle cx="0" cy="-4" r="6" fill="#64B5F6"/>
+    <circle cx="0" cy="-4" r="2.5" fill="#FFF9C4"/>
+  </g>
+  <g transform="translate(450,485)">
+    <line x1="0" y1="0" x2="0" y2="20" stroke="#66BB6A" stroke-width="2"/>
+    <circle cx="0" cy="-5" r="7" fill="#EF5350"/>
+    <circle cx="0" cy="-5" r="3" fill="#FFEB3B"/>
+  </g>
+  <g transform="translate(960,480)">
+    <line x1="0" y1="0" x2="0" y2="22" stroke="#4CAF50" stroke-width="2.5"/>
+    <circle cx="0" cy="-4" r="8" fill="#FF80AB"/>
+    <circle cx="0" cy="-4" r="3" fill="#FFF59D"/>
+  </g>
+  <g transform="translate(1030,500)">
+    <line x1="0" y1="0" x2="0" y2="18" stroke="#66BB6A" stroke-width="2"/>
+    <circle cx="0" cy="-4" r="7" fill="#F48FB1"/>
+    <circle cx="0" cy="-4" r="2.5" fill="#FFF9C4"/>
+  </g>
+  <!-- 蘑菇 -->
+  <g transform="translate(380,505)" opacity="0.8">
+    <rect x="-3" y="0" width="6" height="12" rx="2" fill="#EFEBE9"/>
+    <ellipse cx="0" cy="-2" rx="12" ry="9" fill="#E53935"/>
+    <circle cx="-4" cy="-5" r="2" fill="#fff" opacity="0.8"/>
+    <circle cx="4" cy="-3" r="2.5" fill="#fff" opacity="0.8"/>
+    <circle cx="0" cy="-7" r="1.5" fill="#fff" opacity="0.7"/>
+  </g>
+  <g transform="translate(700,515)" opacity="0.7">
+    <rect x="-2.5" y="0" width="5" height="10" rx="2" fill="#EFEBE9"/>
+    <ellipse cx="0" cy="-2" rx="10" ry="7" fill="#FF7043"/>
+    <circle cx="-3" cy="-3" r="2" fill="#fff" opacity="0.8"/>
+    <circle cx="3" cy="-4" r="1.8" fill="#fff" opacity="0.8"/>
+  </g>
+  <!-- 草丛 -->
+  <ellipse cx="60" cy="505" rx="50" ry="18" fill="#66BB6A" opacity="0.6"/>
+  <ellipse cx="1100" cy="498" rx="45" ry="15" fill="#81C784" opacity="0.55"/>
+  <ellipse cx="820" cy="520" rx="40" ry="14" fill="#A5D6A7" opacity="0.5"/>
+</svg>
+</div>
+
+<!-- ===== 彩花 ===== -->
+<canvas id="confetti-canvas" class="confetti hidden"></canvas>
+
+<!-- ===== 分享提示 ===== -->
+<div class="share-toast" id="share-toast">🔗 链接已复制，快去群里分享吧！</div>
+
+<!-- ===== 反馈弹层 ===== -->
+<div class="feedback-overlay" id="feedback-overlay">
+  <div class="feedback-card">
+    <span class="fb-emoji" id="fb-emoji">🎉</span>
+    <div class="fb-title" id="fb-title">回答正确！</div>
+    <div class="fb-correct-list" id="fb-correct-list"></div>
+    <div class="fb-body" id="fb-body"></div>
+    <button class="fb-btn" onclick="closeFeedback()">继续 ▶</button>
+  </div>
+</div>
+
+<!-- ===== 右侧榜单面板 ===== -->
+<div class="lb-panel" id="lb-panel">
+  <button class="lb-panel-close" onclick="togglePanel()">✕</button>
+  <div class="lb-panel-title">🏆 闯关榜单</div>
+  <ul class="lb-panel-list" id="lb-panel-list"></ul>
+  <div style="text-align:center;margin-top:10px;">
+    <button class="btn btn-reset" onclick="resetAll()" style="width:auto; padding:8px 18px; font-size:13px;">🔄 清空重来</button>
+  </div>
+</div>
+
+<!-- 榜单切换按钮 -->
+<button class="lb-toggle" id="lb-toggle" onclick="togglePanel()">🏆 榜单</button>
+
+<!-- 音乐按钮 -->
+<button class="music-btn" id="music-btn" onclick="toggleMusic()" title="背景音乐">🎵</button>
+
+<!-- ===== 主应用 ===== -->
+<div id="app">
+  <div class="top-bar">
+    <h1>🌿 自然小博士奔奔</h1>
+  </div>
+
+  <!-- 渐变绿Q版机器人奔奔头像 -->
+  <div class="avatar-area">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="bgg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#f1f8e9"/>
+          <stop offset="100%" stop-color="#c8e6c9"/>
+        </radialGradient>
+        <linearGradient id="greenBody" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#81c784"/>
+          <stop offset="50%" stop-color="#66bb6a"/>
+          <stop offset="100%" stop-color="#43a047"/>
+        </linearGradient>
+        <linearGradient id="greenHead" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#a5d6a7"/>
+          <stop offset="50%" stop-color="#66bb6a"/>
+          <stop offset="100%" stop-color="#388e3c"/>
+        </linearGradient>
+        <filter id="gw"><feGaussianBlur stdDeviation="2" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- 背景圆 -->
+      <circle cx="100" cy="100" r="96" fill="url(#bgg)" stroke="#a5d6a7" stroke-width="3"/>
+      <!-- 云朵装饰 -->
+      <ellipse cx="30" cy="44" rx="19" ry="11" fill="#fff" opacity=".7"/>
+      <ellipse cx="43" cy="37" rx="13" ry="9" fill="#fff" opacity=".7"/>
+      <ellipse cx="170" cy="54" rx="17" ry="10" fill="#fff" opacity=".6"/>
+      <ellipse cx="182" cy="47" rx="11" ry="8" fill="#fff" opacity=".6"/>
+      <line x1="30" y1="30" x2="170" y2="30" stroke="#81c784" stroke-width="1.5" stroke-dasharray="4,3" opacity=".6"/>
+      <!-- 顶部三角小彩旗 -->
+      <polygon points="40,30 50,30 45,42" fill="#ff7043" opacity=".8"/>
+      <polygon points="62,30 72,30 67,42" fill="#66bb6a" opacity=".8"/>
+      <polygon points="84,30 94,30 89,42" fill="#42a5f5" opacity=".8"/>
+      <polygon points="106,30 116,30 111,42" fill="#ab47bc" opacity=".8"/>
+      <polygon points="128,30 138,30 133,42" fill="#ef5350" opacity=".8"/>
+      <polygon points="150,30 160,30 155,42" fill="#ffa726" opacity=".8"/>
+      <!-- 身体 - 渐变绿 -->
+      <rect x="70" y="118" width="60" height="52" rx="18" fill="url(#greenBody)" stroke="#2e7d32" stroke-width="2"/>
+      <rect x="76" y="124" width="48" height="10" rx="5" fill="#a5d6a7" opacity=".5"/>
+      <circle cx="100" cy="148" r="14" fill="#1b5e20"/>
+      <circle cx="100" cy="148" r="10" fill="#81c784" opacity=".9"/>
+      <text x="100" y="152" text-anchor="middle" font-size="11" font-weight="900" fill="#fff">✓</text>
+      <circle cx="76" cy="136" r="5" fill="#ef5350"/>
+      <circle cx="124" cy="136" r="5" fill="#ffa726"/>
+      <!-- 头 - 渐变绿+更圆润 -->
+      <rect x="66" y="66" width="68" height="60" rx="24" fill="url(#greenHead)" stroke="#2e7d32" stroke-width="2"/>
+      <rect x="72" y="72" width="56" height="14" rx="7" fill="#c8e6c9" opacity=".45"/>
+      <!-- 左眼框 -->
+      <rect x="76" y="82" width="22" height="18" rx="9" fill="#1b5e20"/>
+      <rect x="78" y="84" width="18" height="14" rx="7" fill="#fff"/>
+      <!-- 左眼珠 - 更大更亮 -->
+      <circle cx="87" cy="91" r="6" fill="#1b5e20"/>
+      <circle cx="90" cy="88" r="2.5" fill="#fff"/>
+      <circle cx="85" cy="93" r="1.2" fill="#fff" opacity=".6"/>
+      <!-- 右眼框 -->
+      <rect x="102" y="82" width="22" height="18" rx="9" fill="#1b5e20"/>
+      <rect x="104" y="84" width="18" height="14" rx="7" fill="#fff"/>
+      <!-- 右眼珠 - 更大更亮 -->
+      <circle cx="113" cy="91" r="6" fill="#1b5e20"/>
+      <circle cx="116" cy="88" r="2.5" fill="#fff"/>
+      <circle cx="111" cy="93" r="1.2" fill="#fff" opacity=".6"/>
+      <!-- 腮红 -->
+      <ellipse cx="68" cy="102" rx="7" ry="4" fill="#ffab91" opacity=".5"/>
+      <ellipse cx="132" cy="102" rx="7" ry="4" fill="#ffab91" opacity=".5"/>
+      <!-- 嘴巴 - 更俏皮 -->
+      <rect x="84" y="108" width="32" height="10" rx="5" fill="#1b5e20"/>
+      <rect x="86" y="110" width="28" height="5" rx="2.5" fill="#81c784" opacity=".8"/>
+      <!-- 天线 -->
+      <line x1="100" y1="66" x2="100" y2="50" stroke="#43a047" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="100" cy="46" r="8" fill="#ff7043" filter="url(#gw)"/>
+      <circle cx="98" cy="44" r="2.5" fill="#fff" opacity=".5"/>
+      <!-- 耳朵 - 圆润 -->
+      <rect x="56" y="80" width="12" height="22" rx="6" fill="#66bb6a"/>
+      <rect x="56" y="84" width="8" height="14" rx="4" fill="#81c784" opacity=".5"/>
+      <rect x="132" y="80" width="12" height="22" rx="6" fill="#66bb6a"/>
+      <rect x="136" y="84" width="8" height="14" rx="4" fill="#81c784" opacity=".5"/>
+      <!-- 手臂 -->
+      <rect x="54" y="120" width="18" height="38" rx="9" fill="url(#greenBody)" stroke="#2e7d32" stroke-width="1.5"/>
+      <rect x="128" y="120" width="18" height="38" rx="9" fill="url(#greenBody)" stroke="#2e7d32" stroke-width="1.5"/>
+      <circle cx="63" cy="162" r="10" fill="#66bb6a"/>
+      <circle cx="137" cy="162" r="10" fill="#66bb6a"/>
+      <!-- 腿 -->
+      <rect x="78" y="168" width="20" height="24" rx="10" fill="#2e7d32"/>
+      <rect x="102" y="168" width="20" height="24" rx="10" fill="#2e7d32"/>
+      <ellipse cx="88" cy="192" rx="14" ry="7" fill="#1b5e20"/>
+      <ellipse cx="112" cy="192" rx="14" ry="7" fill="#1b5e20"/>
+      <!-- === 环绕自然图标 === -->
+      <!-- 小草 -->
+      <g transform="translate(12,82)">
+        <line x1="0" y1="0" x2="0" y2="12" stroke="#66bb6a" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M0,0 Q-8,-5 -6,-12" fill="none" stroke="#4caf50" stroke-width="2" stroke-linecap="round"/>
+        <path d="M0,0 Q8,-5 6,-12" fill="none" stroke="#66bb6a" stroke-width="2" stroke-linecap="round"/>
+        <path d="M0,0 Q0,-6 0,-14" fill="none" stroke="#81c784" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <!-- 花朵 -->
+      <g transform="translate(175,88)">
+        <line x1="0" y1="14" x2="0" y2="0" stroke="#66bb6a" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="0" cy="-4" r="8" fill="#ff80ab"/>
+        <circle cx="0" cy="-4" r="3" fill="#ffeb3b"/>
+      </g>
+      <!-- 太阳 -->
+      <circle cx="170" cy="130" r="15" fill="#ffb300" opacity=".8"/>
+      <circle cx="170" cy="130" r="10" fill="#ffd54f"/>
+      <line x1="170" y1="112" x2="170" y2="116" stroke="#ffb300" stroke-width="2" stroke-linecap="round"/>
+      <line x1="170" y1="148" x2="170" y2="144" stroke="#ffb300" stroke-width="2" stroke-linecap="round"/>
+      <line x1="152" y1="130" x2="156" y2="130" stroke="#ffb300" stroke-width="2" stroke-linecap="round"/>
+      <line x1="188" y1="130" x2="184" y2="130" stroke="#ffb300" stroke-width="2" stroke-linecap="round"/>
+      <line x1="157" y1="117" x2="160" y2="120" stroke="#ffb300" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="183" y1="143" x2="180" y2="140" stroke="#ffb300" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="157" y1="143" x2="160" y2="140" stroke="#ffb300" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="183" y1="117" x2="180" y2="120" stroke="#ffb300" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- 星星 -->
+      <g transform="translate(28,112)">
+        <polygon points="0,-12 3,-4 12,-4 5,1 7,9 0,4 -7,9 -5,1 -12,-4 -3,-4" fill="#ffd54f" stroke="#ffb300" stroke-width="1"/>
+      </g>
+      <!-- 蝴蝶 -->
+      <g transform="translate(168,162)">
+        <ellipse cx="-6" cy="0" rx="6" ry="4" fill="#ce93d8" transform="rotate(-15,-6,0)"/>
+        <ellipse cx="6" cy="0" rx="6" ry="4" fill="#ce93d8" transform="rotate(15,6,0)"/>
+        <line x1="0" y1="-2" x2="0" y2="4" stroke="#6a1b9a" stroke-width="1"/>
+      </g>
+      <!-- 小树 -->
+      <g transform="translate(22,142)">
+        <rect x="-3" y="0" width="6" height="14" rx="2" fill="#8d6e63"/>
+        <ellipse cx="0" cy="-6" rx="14" ry="12" fill="#66bb6a"/>
+        <ellipse cx="0" cy="-12" rx="10" ry="9" fill="#81c784"/>
+      </g>
+      <!-- 小鱼 -->
+      <g transform="translate(30,168)">
+        <ellipse cx="-4" cy="0" rx="10" ry="6" fill="#42a5f5"/>
+        <polygon points="8,0 16,-6 16,6" fill="#42a5f5"/>
+        <circle cx="-5" cy="-2" r="1.5" fill="#fff"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ===== 欢迎屏 ===== -->
+  <div class="card" id="screen-welcome">
+    <div class="welcome-msg">
+      👋 你好！我是<strong>自然小博士奔奔</strong> 🌿
+    </div>
+    <div class="rule-tip">🎯 每组随机 <strong>3</strong> 道题（2基础+1提升），点击消除对应图案</div>
+    <div class="current-group-hint" id="group-hint">🌳 第 1 组，准备开始！</div>
+    <button class="btn btn-start" onclick="startGame()">🚀 开始闯关</button>
+  </div>
+
+  <!-- ===== 答题屏 ===== -->
+  <div class="card hidden" id="screen-quiz">
+    <div class="group-badge" id="quiz-badge">🌳 第 1 组</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span id="prog-label">第 1 题 / 共 3 题</span>
+        <span id="prog-score">得分：0 / 0</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+    <div class="difficulty-badge" id="diff-badge">基础</div>
+    <div class="question-text" id="q-text"></div>
+    <div class="question-hint">👆 点击图案消除它，选好后点下方按钮确认</div>
+    <div class="icon-grid" id="icon-grid"></div>
+    <button class="btn btn-submit" id="btn-submit" onclick="submitAnswer()">🎯 确认消除</button>
+  </div>
+
+  <!-- ===== 结算屏 ===== -->
+  <div class="card hidden" id="screen-result">
+    <div class="result-top">
+      <span class="result-avatar" id="res-avatar">🤖</span>
+      <div class="result-name" id="res-name"></div>
+      <div id="badge-area"></div>
+      <div class="result-score-wrap" id="res-dots"></div>
+    </div>
+    <div class="result-comment" id="res-comment"></div>
+    <button class="btn btn-again" onclick="nextGroup()">🎯 下一组闯关</button>
+    <button class="btn btn-share" onclick="shareGame()">🔗 分享挑战链接</button>
+  </div>
+</div>
+
+<script>
+// ===================== 题库 =====================
+const QUESTIONS = [
+  // === 基础难度（5题） ===
+  {
+    id: 1,
+    text: '请消除所有陆地生活的小动物',
+    diff: 'basic',
+    label: '基础',
+    icons: [
+      { emoji: '🐶', name: '小狗', correct: true },
+      { emoji: '🐟', name: '小鱼', correct: false },
+      { emoji: '🐱', name: '小猫', correct: true },
+      { emoji: '🐦', name: '小鸟', correct: true },
+      { emoji: '🐠', name: '金鱼', correct: false },
+      { emoji: '🐢', name: '乌龟', correct: false }
+    ]
+  },
+  {
+    id: 2,
+    text: '请消除属于春季开放的花朵',
+    diff: 'basic',
+    label: '基础',
+    icons: [
+      { emoji: '🌸', name: '桃花', correct: true },
+      { emoji: '🪷', name: '荷花', correct: false },
+      { emoji: '🌼', name: '迎春花', correct: true },
+      { emoji: '🌺', name: '梅花', correct: false }
+    ]
+  },
+  {
+    id: 3,
+    text: '请消除天上能看到的天体',
+    diff: 'basic',
+    label: '基础',
+    icons: [
+      { emoji: '☀️', name: '太阳', correct: true },
+      { emoji: '🌙', name: '月亮', correct: true },
+      { emoji: '🌳', name: '大树', correct: false },
+      { emoji: '⭐', name: '星星', correct: true },
+      { emoji: '🌿', name: '小草', correct: false }
+    ]
+  },
+  {
+    id: 4,
+    text: '请消除会飞的小动物',
+    diff: 'basic',
+    label: '基础',
+    icons: [
+      { emoji: '🐝', name: '蜜蜂', correct: true },
+      { emoji: '🐞', name: '蜻蜓', correct: true },
+      { emoji: '🐰', name: '兔子', correct: false },
+      { emoji: '🦅', name: '老鹰', correct: true },
+      { emoji: '🐌', name: '蜗牛', correct: false }
+    ]
+  },
+  {
+    id: 5,
+    text: '请消除生长在泥土里的植物',
+    diff: 'basic',
+    label: '基础',
+    icons: [
+      { emoji: '🥕', name: '胡萝卜', correct: true },
+      { emoji: '🥔', name: '土豆', correct: true },
+      { emoji: '🍎', name: '苹果', correct: false },
+      { emoji: '🥜', name: '花生', correct: true },
+      { emoji: '🍇', name: '葡萄', correct: false }
+    ]
+  },
+  // === 中等难度（5题） ===
+  {
+    id: 6,
+    text: '请消除属于夏季的自然现象',
+    diff: 'medium',
+    label: '中等',
+    icons: [
+      { emoji: '⛈️', name: '雷雨', correct: true },
+      { emoji: '❄️', name: '大雪', correct: false },
+      { emoji: '🔥', name: '烈日', correct: true },
+      { emoji: '🥶', name: '霜冻', correct: false },
+      { emoji: '🌪️', name: '台风', correct: true }
+    ]
+  },
+  {
+    id: 7,
+    text: '请消除肉食性小动物',
+    diff: 'medium',
+    label: '中等',
+    icons: [
+      { emoji: '🐯', name: '老虎', correct: true },
+      { emoji: '🐑', name: '小羊', correct: false },
+      { emoji: '🦁', name: '狮子', correct: true },
+      { emoji: '🐰', name: '兔子', correct: false },
+      { emoji: '🐺', name: '大灰狼', correct: true }
+    ]
+  },
+  {
+    id: 8,
+    text: '请消除大自然里可再生自然资源',
+    diff: 'medium',
+    label: '中等',
+    icons: [
+      { emoji: '☀️', name: '阳光', correct: true },
+      { emoji: '🌊', name: '河水', correct: true },
+      { emoji: '🪨', name: '煤炭', correct: false },
+      { emoji: '💨', name: '风力', correct: true },
+      { emoji: '🛢️', name: '石油', correct: false }
+    ]
+  },
+  {
+    id: 9,
+    text: '请消除夜晚才会出现的自然景象',
+    diff: 'medium',
+    label: '中等',
+    icons: [
+      { emoji: '🌅', name: '晚霞', correct: false },
+      { emoji: '🪲', name: '萤火虫', correct: true },
+      { emoji: '🌙', name: '月亮', correct: true },
+      { emoji: '🌄', name: '朝阳', correct: false },
+      { emoji: '⭐', name: '星星', correct: true }
+    ]
+  },
+  {
+    id: 10,
+    text: '请消除水生植物',
+    diff: 'medium',
+    label: '中等',
+    icons: [
+      { emoji: '🪷', name: '荷花', correct: true },
+      { emoji: '🌿', name: '浮萍', correct: true },
+      { emoji: '🌾', name: '芦苇', correct: true },
+      { emoji: '🌲', name: '松树', correct: false },
+      { emoji: '🌻', name: '向日葵', correct: false }
+    ]
+  },
+  // === 进阶难度（5题） ===
+  {
+    id: 11,
+    text: '请消除对大自然有害的行为',
+    diff: 'advanced',
+    label: '进阶',
+    icons: [
+      { emoji: '🗑️', name: '乱扔垃圾', correct: true },
+      { emoji: '🌱', name: '植树造林', correct: false },
+      { emoji: '🕊️', name: '捕捉小鸟', correct: true },
+      { emoji: '💐', name: '采摘野花', correct: true },
+      { emoji: '💧', name: '节约用水', correct: false }
+    ]
+  },
+  {
+    id: 12,
+    text: '请消除冷血动物',
+    diff: 'advanced',
+    label: '进阶',
+    icons: [
+      { emoji: '🐍', name: '蛇', correct: true },
+      { emoji: '🐸', name: '青蛙', correct: true },
+      { emoji: '🐱', name: '小猫', correct: false },
+      { emoji: '🦎', name: '蜥蜴', correct: true },
+      { emoji: '🐤', name: '小鸡', correct: false }
+    ]
+  },
+  {
+    id: 13,
+    text: '请消除会落叶的树木',
+    diff: 'advanced',
+    label: '进阶',
+    icons: [
+      { emoji: '🍁', name: '梧桐', correct: true },
+      { emoji: '🍂', name: '银杏', correct: true },
+      { emoji: '🍁', name: '枫树', correct: true },
+      { emoji: '🌲', name: '松树', correct: false }
+    ]
+  },
+  {
+    id: 14,
+    text: '请消除天气寒冷才会出现的自然现象',
+    diff: 'advanced',
+    label: '进阶',
+    icons: [
+      { emoji: '🧊', name: '结冰', correct: true },
+      { emoji: '❄️', name: '霜降', correct: true },
+      { emoji: '🌫️', name: '大雾', correct: false },
+      { emoji: '🧊', name: '冰雹', correct: true },
+      { emoji: '🌬️', name: '热风', correct: false }
+    ]
+  },
+  {
+    id: 15,
+    text: '请消除依靠风力传播种子的植物',
+    diff: 'advanced',
+    label: '进阶',
+    icons: [
+      { emoji: '🌼', name: '蒲公英', correct: true },
+      { emoji: '🪴', name: '苍耳', correct: false },
+      { emoji: '🍁', name: '枫树', correct: true },
+      { emoji: '🫛', name: '豌豆', correct: false },
+      { emoji: '🪷', name: '莲蓬', correct: false }
+    ]
+  }
+];
+
+// ===================== 状态 =====================
+let state = {
+  groupNo:     1,
+  pickedQs:    [],
+  currentIdx:  0,
+  score:       0,
+  answers:     [],
+  leaderboard: [],
+  panelOpen:   false,
+  selectedIcons: {},  // {iconIndex: true}
+};
+
+// ===================== 工具 =====================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickQs() {
+  const basic = shuffle(QUESTIONS.filter(q => q.diff === 'basic'));
+  const adv   = shuffle(QUESTIONS.filter(q => q.diff === 'medium' || q.diff === 'advanced'));
+  // 2道基础 + 1道提升（中等或进阶随机）
+  return shuffle([basic[0], basic[1], adv[0]]);
+}
+
+function showScreen(id) {
+  ['screen-welcome','screen-quiz','screen-result'].forEach(s =>
+    document.getElementById(s).classList.add('hidden')
+  );
+  document.getElementById(id).classList.remove('hidden');
+}
+
+// ===================== 右侧榜单面板 =====================
+function togglePanel() {
+  state.panelOpen = !state.panelOpen;
+  const panel = document.getElementById('lb-panel');
+  const toggle = document.getElementById('lb-toggle');
+  if (state.panelOpen) {
+    panel.classList.add('open');
+    toggle.classList.add('shift');
+  } else {
+    panel.classList.remove('open');
+    toggle.classList.remove('shift');
+  }
+  renderPanel();
+}
+
+function renderPanel() {
+  const el = document.getElementById('lb-panel-list');
+  el.innerHTML = '';
+  if (state.leaderboard.length === 0) {
+    el.innerHTML = '<div class="lb-panel-empty">🌿 暂无人闯关，快来挑战吧！</div>';
+    return;
+  }
+  const sorted = [...state.leaderboard].sort((a, b) => {
+    if (b.perfect !== a.perfect) return b.perfect ? -1 : 1;
+    return b.score - a.score;
+  });
+  const medals = ['🥇','🥈','🥉'];
+  sorted.forEach((item, i) => {
+    const li = document.createElement('li');
+    li.className = 'lb-panel-item';
+    const perfectIcon = item.perfect ? ' 🏆' : '';
+    li.innerHTML =
+      '<span class="lb-panel-rank">' + (medals[i] || (i+1)) + '</span>' +
+      '<span class="lb-panel-name">第' + item.groupNo + '组' + perfectIcon + '</span>' +
+      '<span class="lb-panel-score">' + item.score + '/' + item.total + '</span>';
+    el.appendChild(li);
+  });
+}
+
+// ===================== 开始游戏 =====================
+function startGame() {
+  state.pickedQs   = pickQs();
+  state.currentIdx = 0;
+  state.score      = 0;
+  state.answers    = [];
+  state.selectedIcons = {};
+
+  document.getElementById('quiz-badge').textContent = '🌳 第 ' + state.groupNo + ' 组';
+  showScreen('screen-quiz');
+  renderQ();
+}
+
+// ===================== 渲染题目 =====================
+function renderQ() {
+  const q     = state.pickedQs[state.currentIdx];
+  const idx   = state.currentIdx;
+  const total = state.pickedQs.length;
+
+  state.selectedIcons = {};
+
+  document.getElementById('q-text').textContent  = q.text;
+  document.getElementById('prog-label').textContent = '第 '+(idx+1)+' 题 / 共 '+total+' 题';
+  document.getElementById('prog-score').textContent = '得分：'+state.score+' / '+idx;
+  document.getElementById('prog-fill').style.width  = (idx/total*100)+'%';
+
+  const badge = document.getElementById('diff-badge');
+  badge.textContent = q.label;
+  badge.className   = 'difficulty-badge';
+  badge.classList.add({ basic:'diff-basic', medium:'diff-medium', advanced:'diff-advanced' }[q.diff]);
+
+  // 渲染图标网格
+  const grid = document.getElementById('icon-grid');
+  grid.innerHTML = '';
+  q.icons.forEach((icon, i) => {
+    const card = document.createElement('div');
+    card.className = 'icon-card';
+    card.innerHTML =
+      '<span class="icon-emoji">' + icon.emoji + '</span>' +
+      '<span class="icon-label">' + icon.name + '</span>';
+    card.addEventListener('click', () => toggleIcon(i, card));
+    grid.appendChild(card);
+  });
+
+  document.getElementById('btn-submit').disabled = false;
+}
+
+function toggleIcon(index, card) {
+  playTapSound();
+  if (state.selectedIcons[index]) {
+    delete state.selectedIcons[index];
+    card.classList.remove('selected');
+  } else {
+    state.selectedIcons[index] = true;
+    card.classList.add('selected');
+  }
+}
+
+// ===================== 提交答案 =====================
+function submitAnswer() {
+  const q = state.pickedQs[state.currentIdx];
+  
+  // 获取正确答案的索引
+  const correctIndices = [];
+  q.icons.forEach((icon, i) => { if (icon.correct) correctIndices.push(i); });
+  
+  // 获取用户选择的索引
+  const selectedIndices = Object.keys(state.selectedIcons).map(Number).sort((a,b)=>a-b);
+  
+  // 比较是否完全匹配
+  const isExactMatch = 
+    selectedIndices.length === correctIndices.length &&
+    selectedIndices.every(idx => correctIndices.includes(idx));
+
+  const ok = isExactMatch;
+
+  // 播放音效
+  if (ok) { playCorrectSound(); }
+  else { playWrongSound(); }
+
+  if (ok) state.score++;
+  state.answers.push({ q, ok });
+
+  // 禁用提交按钮和图标
+  document.getElementById('btn-submit').disabled = true;
+  document.querySelectorAll('.icon-card').forEach(card => {
+    card.style.pointerEvents = 'none';
+  });
+
+  const overlay = document.getElementById('feedback-overlay');
+  const emoji   = document.getElementById('fb-emoji');
+  const title   = document.getElementById('fb-title');
+  const body    = document.getElementById('fb-body');
+  const correctList = document.getElementById('fb-correct-list');
+
+  if (ok) {
+    emoji.textContent = ['🎉','🥳','⭐','🌟','✨','👍'][Math.floor(Math.random()*6)];
+    title.textContent = '太棒了，消除正确！';
+    title.className   = 'fb-title ok';
+    correctList.textContent = '';
+    body.innerHTML    = '你已经掌握了这个自然小知识！';
+  } else {
+    emoji.textContent = ['😅','💪','🤔','📚'][Math.floor(Math.random()*4)];
+    title.textContent = '再想想哦，加油！';
+    title.className   = 'fb-title no';
+    const correctNames = correctIndices.map(i => q.icons[i].emoji + q.icons[i].name).join('、');
+    correctList.textContent = '';
+    body.innerHTML    = '正确答案：<strong>' + correctNames + '</strong>';
+  }
+  overlay.classList.add('show');
+}
+
+function closeFeedback() {
+  document.getElementById('feedback-overlay').classList.remove('show');
+  state.currentIdx++;
+  if (state.currentIdx >= state.pickedQs.length) {
+    setTimeout(showResult, 180);
+  } else {
+    renderQ();
+  }
+}
+
+// ===================== 结算 =====================
+function showResult() {
+  const score = state.score;
+  const total = state.pickedQs.length;
+  const perfect = score === total;
+
+  state.leaderboard.push({ groupNo: state.groupNo, score, total, perfect });
+  if (score >= 2) launchConfetti();
+
+  const avatarMap = { 3:'🏆', 2:'🥈', 1:'📖', 0:'💪' };
+  document.getElementById('res-avatar').textContent = avatarMap[score] || '💪';
+  document.getElementById('res-name').textContent   = '第 ' + state.groupNo + ' 组';
+
+  // 徽章
+  const badgeArea = document.getElementById('badge-area');
+  if (perfect) {
+    badgeArea.innerHTML = '<div class="badge-display">🏅 自然小博士荣誉徽章</div>';
+  } else {
+    badgeArea.innerHTML = '';
+  }
+
+  const dotsEl = document.getElementById('res-dots');
+  dotsEl.innerHTML = '';
+  state.answers.forEach(a => {
+    const d = document.createElement('div');
+    d.className   = 'score-dot ' + (a.ok ? 'ok' : 'bad');
+    d.textContent = a.ok ? '✓' : '✗';
+    dotsEl.appendChild(d);
+  });
+
+  const commentEl = document.getElementById('res-comment');
+  const comments  = {
+    3: '🌟 满分通关！你是真正的自然小博士！🏅',
+    2: '👍 答对2题，很不错！继续加油哦～',
+    1: '📚 答对1题，多观察大自然，下次一定行！',
+    0: '💪 别灰心，大自然是我们的好朋友，再试试！',
+  };
+  commentEl.textContent = comments[score];
+
+  showScreen('screen-result');
+  renderPanel();
+}
+
+// ===================== 下一组 =====================
+function nextGroup() {
+  state.groupNo++;
+  document.getElementById('group-hint').textContent = '🌳 第 ' + state.groupNo + ' 组，准备开始！';
+  showScreen('screen-welcome');
+}
+
+// ===================== 分享 =====================
+function shareGame() {
+  const url = window.location.href.split('?')[0];
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => showShareToast());
+  } else {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showShareToast();
+  }
+}
+
+function showShareToast() {
+  const toast = document.getElementById('share-toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+// ===================== 重置 =====================
+function resetAll() {
+  state.groupNo    = 1;
+  state.leaderboard = [];
+  document.getElementById('group-hint').textContent = '🌳 第 1 组，准备开始！';
+  showScreen('screen-welcome');
+  renderPanel();
+}
+
+// ===================== 彩花 =====================
+function launchConfetti() {
+  const c = document.getElementById('confetti-canvas');
+  c.classList.remove('hidden');
+  c.width  = window.innerWidth;
+  c.height = window.innerHeight;
+  const ctx    = c.getContext('2d');
+  const colors = ['#66bb6a','#43a047','#81c784','#42a5f5','#ab47bc','#ffa726','#ef5350','#ff80ab','#ffd54f'];
+  const shapes = [];
+  for (let i = 0; i < 120; i++) {
+    shapes.push({
+      x: Math.random()*c.width, y:-20,
+      size: Math.random()*8+4,
+      col: colors[Math.floor(Math.random()*colors.length)],
+      dx: (Math.random()-.5)*5, dy: Math.random()*4+3,
+      rot: Math.random()*360, drot: (Math.random()-.5)*10,
+      type: Math.random() > .5 ? 'circle' : (Math.random() > .5 ? 'leaf' : 'rect'),
+    });
+  }
+  let frame = 0;
+  (function draw() {
+    ctx.clearRect(0,0,c.width,c.height);
+    shapes.forEach(s => {
+      ctx.save(); ctx.translate(s.x,s.y); ctx.rotate(s.rot*Math.PI/180);
+      ctx.fillStyle = s.col;
+      if (s.type === 'circle') {
+        ctx.beginPath(); ctx.arc(0,0,s.size,0,Math.PI*2); ctx.fill();
+      } else if (s.type === 'leaf') {
+        ctx.beginPath();
+        ctx.ellipse(0, 0, s.size, s.size*0.55, 0, 0, Math.PI*2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-s.size,-s.size/2.5,s.size*2,s.size/1.25);
+      }
+      ctx.restore();
+      s.x+=s.dx; s.y+=s.dy; s.rot+=s.drot;
+      if (s.y > c.height + 20) { s.y = -20; s.x = Math.random()*c.width; }
+    });
+    if (++frame < 150) requestAnimationFrame(draw);
+    else c.classList.add('hidden');
+  })();
+}
+
+// ===================== 背景音乐 =====================
+let audioCtx = null, musicPlaying = false, musicInterval = null;
+
+function createAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playNote(freq, dur, delay, vol, type) {
+  vol = vol || 0.06;
+  type = type || 'sine';
+  try {
+    const ctx = createAudioCtx();
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    const t = ctx.currentTime + (delay || 0);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + 0.04);
+    g.gain.linearRampToValueAtTime(0, t + dur);
+    osc.connect(g);
+    g.connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
+  } catch(e) { /* ignore */ }
+}
+
+// 温馨自然风旋律
+const natureMelody = [
+  [523.25, 0.5, 0],     // C
+  [587.33, 0.5, 0.45],  // D
+  [659.25, 0.6, 0.9],   // E
+  [523.25, 0.4, 1.4],
+  [783.99, 0.5, 1.8],   // G
+  [659.25, 0.5, 2.2],
+  [587.33, 0.6, 2.65],
+  [523.25, 0.5, 3.2],
+  [392.00, 0.5, 3.65],  // G lower
+  [440.00, 0.5, 4.1],
+  [523.25, 0.6, 4.55],
+  [587.33, 0.8, 5.1],
+  [659.25, 0.5, 5.85],
+  [523.25, 0.4, 6.3],
+  [440.00, 0.5, 6.7],
+  [523.25, 1.0, 7.15],
+];
+
+function playMusicLoop() {
+  natureMelody.forEach(([f, d, t]) => {
+    playNote(f, d, t, 0.045, 'sine');
+    playNote(f * 2, d, t, 0.008, 'triangle');
+  });
+  // 低音伴奏
+  [261.63, 293.66, 329.63, 261.63].forEach((f, i) => {
+    playNote(f, 1.2, i * 2.1, 0.025, 'sine');
+  });
+}
+
+function startMusic() {
+  if (musicPlaying) return;
+  createAudioCtx();
+  musicPlaying = true;
+  document.getElementById('music-btn').classList.remove('off');
+  document.getElementById('music-btn').textContent = '🎵';
+  playMusicLoop();
+  musicInterval = setInterval(playMusicLoop, 9500);
+}
+
+function stopMusic() {
+  musicPlaying = false;
+  document.getElementById('music-btn').classList.add('off');
+  document.getElementById('music-btn').textContent = '🔇';
+  if (musicInterval) clearInterval(musicInterval);
+  musicInterval = null;
+}
+
+function toggleMusic() {
+  if (musicPlaying) stopMusic();
+  else startMusic();
+}
+
+// ===================== 音效 =====================
+function playCorrectSound() {
+  playNote(523.25, 0.2, 0, 0.08, 'sine');
+  playNote(659.25, 0.2, 0.1, 0.08, 'sine');
+  playNote(783.99, 0.35, 0.2, 0.1, 'sine');
+}
+
+function playWrongSound() {
+  playNote(330, 0.3, 0, 0.06, 'triangle');
+  playNote(262, 0.35, 0.2, 0.06, 'triangle');
+}
+
+function playTapSound() {
+  playNote(880, 0.08, 0, 0.04, 'sine');
+}
+
+// ===================== 初始化 =====================
+showScreen('screen-welcome');
+renderPanel();
+
+// 首次点击时自动启动音乐
+document.addEventListener('click', function autoStart() {
+  startMusic();
+  document.removeEventListener('click', autoStart);
+}, { once: true });
+</script>
+</body>
+</html>

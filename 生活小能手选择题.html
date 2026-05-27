@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>生活小能手 - 闯关答题</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Noto Sans SC', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #FFF3DC 0%, #FFE8C0 30%, #FFD4A8 60%, #FDC8A0 100%);
+  overflow-x: hidden;
+  position: relative;
+  padding: 10px;
+}
+
+/* --- Living Room Background --- */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    /* 地板 - 木纹效果 */
+    linear-gradient(0deg, #C4956A 0%, #D4A574 15%, #E8C9A0 30%, transparent 35%),
+    /* 墙壁 */
+    linear-gradient(180deg, #FFF8E7 0%, #FFF3DC 100%);
+  z-index: -2;
+}
+
+/* 墙壁装饰 */
+body::after {
+  content: '';
+  position: fixed;
+  top: 8%; right: 12%;
+  width: 120px; height: 80px;
+  background: linear-gradient(135deg, #FFE8D6 0%, #FFD4B8 100%);
+  border: 4px solid #8B6914;
+  border-radius: 8px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.1), inset 0 0 0 8px #FFF8E7;
+  z-index: -1;
+  transform: rotate(2deg);
+}
+
+/* 装饰画内风景 */
+.decor-frame {
+  position: fixed;
+  top: 9%; right: 13%;
+  width: 110px; height: 70px;
+  z-index: -1;
+  border-radius: 4px;
+  background:
+    radial-gradient(circle at 70% 50%, #FFD700 8px, transparent 9px),
+    linear-gradient(180deg, #87CEEB 0%, #B0E0E6 40%, #90EE90 41%, #228B22 70%, #8B4513 71%, #8B4513 100%);
+  transform: rotate(2deg);
+}
+
+/* 沙发 */
+.sofa {
+  position: fixed;
+  bottom: 0; left: 5%;
+  width: 200px; height: 120px;
+  z-index: -1;
+  background: linear-gradient(180deg, #F5DEB3 0%, #E8C896 60%, #D4A96A 100%);
+  border-radius: 30px 30px 0 0;
+  box-shadow: inset 0 8px 16px rgba(255,255,255,0.3), 0 4px 12px rgba(0,0,0,0.1);
+}
+.sofa::before {
+  content: '🧸';
+  position: absolute;
+  font-size: 32px;
+  top: 15px; left: 25%;
+}
+.sofa::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: -20px; right: -20px;
+  height: 40px;
+  background: linear-gradient(180deg, #D4A96A, #C4956A);
+  border-radius: 16px;
+}
+
+/* 落地灯 */
+.floor-lamp {
+  position: fixed;
+  bottom: 60px; right: 8%;
+  width: 8px; height: 160px;
+  z-index: -1;
+  background: #8B7355;
+  border-radius: 4px;
+}
+.floor-lamp::before {
+  content: '';
+  position: absolute;
+  top: -30px; left: -30px;
+  width: 68px; height: 50px;
+  background: linear-gradient(180deg, #FFF8DC 0%, #FFE4B5 60%, #FFD700 100%);
+  border-radius: 50% / 60% 60% 30% 30%;
+  box-shadow: 0 0 40px 20px rgba(255, 215, 0, 0.3), 0 0 80px 40px rgba(255, 200, 0, 0.15);
+}
+.floor-lamp::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; left: -10px;
+  width: 28px; height: 40px;
+  background: #8B6914;
+  border-radius: 50%;
+}
+
+/* 绿植 */
+.plant {
+  position: fixed;
+  bottom: 30px; left: 45%;
+  font-size: 60px;
+  z-index: -1;
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+}
+
+/* 散落物品 */
+.floor-items {
+  position: fixed;
+  bottom: 15px;
+  left: 0; right: 0;
+  z-index: -1;
+  pointer-events: none;
+  font-size: 28px;
+  display: flex;
+  justify-content: space-around;
+  padding: 0 8%;
+  opacity: 0.5;
+}
+
+/* 樱桃装饰 */
+.cherry-decor {
+  position: fixed;
+  pointer-events: none;
+  z-index: -1;
+  font-size: 24px;
+}
+.cherry-1 { top: 10%; left: 8%; animation: float 4s ease-in-out infinite; }
+.cherry-2 { top: 15%; right: 18%; animation: float 5s ease-in-out infinite 1s; }
+.cherry-3 { top: 45%; left: 12%; animation: float 3.5s ease-in-out infinite 2s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(5deg); }
+}
+
+/* --- Main App Container --- */
+.app-container {
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Screen Base --- */
+.screen {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.screen.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Card --- */
+.card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-radius: 24px;
+  padding: 24px 20px;
+  box-shadow: 0 8px 32px rgba(139, 105, 20, 0.12), 0 2px 8px rgba(0,0,0,0.06);
+  border: 2px solid rgba(255, 215, 0, 0.2);
+}
+
+/* --- Cherry Character --- */
+.character-area {
+  text-align: center;
+  margin-bottom: 8px;
+  position: relative;
+}
+.cherry-svg {
+  width: 150px;
+  height: 165px;
+  display: inline-block;
+  animation: cherryBounce 2.5s ease-in-out infinite;
+}
+
+@keyframes cherryBounce {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  30% { transform: translateY(-10px) rotate(2deg); }
+  60% { transform: translateY(-4px) rotate(-1deg); }
+}
+
+/* 角色名字 */
+.char-name {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.char-name-text {
+  display: inline-block;
+  font-size: 20px;
+  font-weight: 800;
+  color: #FF6B8A;
+  background: linear-gradient(135deg, #FFE0EC, #FFD0E0);
+  padding: 6px 22px;
+  border-radius: 50px;
+  letter-spacing: 2px;
+  box-shadow: 0 3px 12px rgba(255, 107, 138, 0.2);
+  animation: namePulse 2s ease-in-out infinite;
+  border: 2px dashed #FFB3C6;
+}
+@keyframes namePulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 3px 12px rgba(255, 107, 138, 0.2); }
+  50% { transform: scale(1.05); box-shadow: 0 4px 18px rgba(255, 107, 138, 0.35); }
+}
+
+/* 环绕图标 */
+.orbit-icons {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+.orbit-icon {
+  font-size: 28px;
+  animation: orbitFloat 3s ease-in-out infinite;
+}
+.orbit-icon:nth-child(2) { animation-delay: 0.5s; }
+.orbit-icon:nth-child(3) { animation-delay: 1s; }
+.orbit-icon:nth-child(4) { animation-delay: 1.5s; }
+.orbit-icon:nth-child(5) { animation-delay: 2s; }
+
+@keyframes orbitFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* --- Title --- */
+.game-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: #6B3A1F;
+  margin-bottom: 4px;
+  letter-spacing: 2px;
+}
+.game-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: #A08060;
+  margin-bottom: 16px;
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-block;
+  padding: 14px 36px;
+  border: none;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.btn:active { transform: scale(0.95); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #FF6B8A 0%, #FF4570 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(255, 69, 112, 0.35);
+  min-width: 180px;
+}
+.btn-primary:hover { box-shadow: 0 6px 20px rgba(255, 69, 112, 0.45); }
+
+.btn-secondary {
+  background: linear-gradient(135deg, #4ECDC4 0%, #44B5AD 100%);
+  color: white;
+  box-shadow: 0 4px 16px rgba(78, 205, 196, 0.3);
+}
+.btn-secondary:hover { box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4); }
+
+.btn-outline {
+  background: white;
+  color: #FF4570;
+  border: 2px solid #FF4570;
+}
+.btn-outline:hover { background: #FFF0F5; }
+
+.btn-small {
+  padding: 10px 24px;
+  font-size: 15px;
+  min-width: auto;
+}
+
+.btn-lg {
+  padding: 16px 48px;
+  font-size: 22px;
+}
+
+
+/* --- Option Button --- */
+.option-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  margin-bottom: 10px;
+  background: #FFFBF5;
+  border: 2px solid #FFE0C0;
+  border-radius: 16px;
+  font-size: 17px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  color: #6B3A1F;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.option-btn:hover { background: #FFF0E0; border-color: #FFB87A; }
+.option-btn:active { transform: scale(0.98); }
+.option-btn.selected { border-color: #FF6B8A; background: #FFF0F5; box-shadow: 0 0 0 3px rgba(255,107,138,0.15); }
+.option-btn.correct { background: #E8F8E8; border-color: #4CAF50; color: #2E7D32; }
+.option-btn.wrong { background: #FFE8E8; border-color: #EF5350; color: #C62828; }
+.option-btn.disabled { pointer-events: none; opacity: 0.85; }
+
+.option-label {
+  display: inline-block;
+  width: 28px; height: 28px;
+  line-height: 28px;
+  text-align: center;
+  background: #FF6B8A;
+  color: white;
+  border-radius: 50%;
+  margin-right: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+/* --- Progress Bar --- */
+.progress-bar {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.progress-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #FFD0E0;
+  transition: all 0.3s;
+}
+.progress-dot.done { background: #FF6B8A; }
+.progress-dot.current { background: #FF6B8A; box-shadow: 0 0 8px rgba(255,107,138,0.5); transform: scale(1.2); }
+.progress-dot.correct-dot { background: #4CAF50; }
+.progress-dot.wrong-dot { background: #EF5350; }
+
+/* --- Feedback --- */
+.feedback {
+  text-align: center;
+  padding: 16px;
+  border-radius: 16px;
+  margin: 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  animation: popIn 0.3s ease;
+}
+@keyframes popIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.feedback.correct-fb {
+  background: linear-gradient(135deg, #E8F8E8, #C8F0C8);
+  color: #2E7D32;
+}
+.feedback.wrong-fb {
+  background: linear-gradient(135deg, #FFE8E8, #FFD0D0);
+  color: #C62828;
+}
+
+/* --- Badge --- */
+.badge-display {
+  text-align: center;
+  padding: 20px;
+  animation: badgeAppear 0.6s ease;
+}
+@keyframes badgeAppear {
+  0% { transform: scale(0) rotate(-30deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.badge-icon { font-size: 72px; }
+.badge-text {
+  font-size: 22px;
+  font-weight: 700;
+  color: #FF6B8A;
+  margin-top: 8px;
+}
+
+/* --- Results Table --- */
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 15px;
+}
+.results-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #FFE8D0;
+}
+.results-table td:first-child { color: #A08060; }
+.results-table td:last-child { text-align: right; font-weight: 600; color: #6B3A1F; }
+
+/* --- Leaderboard --- */
+.leaderboard {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 14px;
+}
+.leaderboard th {
+  background: linear-gradient(135deg, #FF6B8A, #FF4570);
+  color: white;
+  padding: 10px 8px;
+  font-weight: 600;
+  border-radius: 4px 4px 0 0;
+}
+.leaderboard th:first-child { border-radius: 12px 0 0 0; }
+.leaderboard th:last-child { border-radius: 0 12px 0 0; }
+.leaderboard td {
+  padding: 10px 8px;
+  text-align: center;
+  border-bottom: 1px solid #FFE8D0;
+  color: #6B3A1F;
+}
+.leaderboard tr:nth-child(even) td { background: #FFFBF5; }
+.leaderboard .rank-1 td { background: #FFF8E1; font-weight: 700; }
+.leaderboard .rank-2 td { background: #FFFDF5; }
+.leaderboard .rank-3 td { background: #FFFBF5; }
+.perfect-badge { color: #FF6B8A; font-size: 18px; }
+
+/* --- Action Bar --- */
+.action-bar {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+/* --- Score Display --- */
+.score-big {
+  text-align: center;
+  font-size: 48px;
+  font-weight: 800;
+  color: #FF6B8A;
+}
+.score-label {
+  text-align: center;
+  font-size: 14px;
+  color: #A08060;
+  margin-bottom: 4px;
+}
+
+/* --- Round indicator --- */
+.round-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #FFF0F5, #FFE0EC);
+  color: #C0396B;
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* --- Difficulty Tag --- */
+.difficulty-tag {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.difficulty-tag.basic { background: #E8F8E8; color: #2E7D32; }
+.difficulty-tag.upgrade { background: #FFF3E0; color: #E65100; }
+
+/* --- Question --- */
+.question-text {
+  font-size: 19px;
+  font-weight: 600;
+  color: #6B3A1F;
+  text-align: center;
+  margin: 8px 0 16px 0;
+  line-height: 1.5;
+}
+
+/* --- Centering utility --- */
+.text-center { text-align: center; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+
+/* --- Stars --- */
+.stars { font-size: 36px; letter-spacing: 4px; }
+
+/* --- Responsive --- */
+@media (max-width: 400px) {
+  .card { padding: 18px 14px; border-radius: 20px; }
+  .game-title { font-size: 24px; }
+  .option-btn { font-size: 15px; padding: 12px 16px; }
+  .question-text { font-size: 17px; }
+  .btn { font-size: 16px; padding: 12px 28px; }
+  .cherry-svg { width: 115px; height: 130px; }
+  .orbit-icon { font-size: 24px; }
+}
+
+@media (min-width: 768px) {
+  .card { padding: 32px 28px; }
+  .option-btn:hover { transform: translateX(4px); }
+}
+</style>
+</head>
+<body>
+
+<!-- 沙发 -->
+<div class="sofa"></div>
+
+<!-- 落地灯 -->
+<div class="floor-lamp"></div>
+
+<!-- 绿植 -->
+<div class="plant">🪴</div>
+
+<!-- 散落物品 -->
+<div class="floor-items">
+  <span>📚</span><span>🧺</span><span>🛍️</span><span>🔧</span>
+</div>
+
+<!-- 装饰画框 -->
+<div class="decor-frame"></div>
+
+<!-- 樱桃 -->
+<div class="cherry-decor cherry-1">🍒</div>
+<div class="cherry-decor cherry-2">🍒</div>
+<div class="cherry-decor cherry-3">🍒</div>
+
+<!-- ===================== APP ===================== -->
+<div class="app-container" id="app">
+
+  <!-- ========== 首页 ========== -->
+  <div class="screen active" id="screen-home">
+    <div class="card">
+      <div class="character-area">
+        <svg class="cherry-svg" viewBox="0 0 160 175" xmlns="http://www.w3.org/2000/svg">
+          <!-- 身体 -->
+          <ellipse cx="80" cy="95" rx="52" ry="55" fill="url(#cherryBody)"/>
+          <!-- 身体高光 -->
+          <ellipse cx="65" cy="78" rx="18" ry="16" fill="white" opacity="0.25"/>
+          <!-- 樱桃梗 -->
+          <path d="M78 42 Q76 20 66 8" stroke="#5D8A3C" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <!-- 叶子 -->
+          <path d="M66 8 Q56 -2 62 -6 Q72 -8 72 4" fill="#7CB342" stroke="#5D8A3C" stroke-width="1.5"/>
+          <path d="M66 8 Q58 14 52 10 Q48 4 58 2" fill="#8BC34A" stroke="#5D8A3C" stroke-width="1.5"/>
+          <!-- 眼睛 -->
+          <ellipse cx="62" cy="78" rx="12" ry="14" fill="white"/>
+          <ellipse cx="98" cy="78" rx="12" ry="14" fill="white"/>
+          <circle cx="64" cy="80" r="6" fill="#4A2C3E"/>
+          <circle cx="100" cy="80" r="6" fill="#4A2C3E"/>
+          <circle cx="67" cy="76" r="2.5" fill="white"/>
+          <circle cx="103" cy="76" r="2.5" fill="white"/>
+          <!-- 睫毛 -->
+          <path d="M54 72 Q56 68 58 72" stroke="#4A2C3E" stroke-width="1.5" fill="none"/>
+          <path d="M102 72 Q104 68 106 72" stroke="#4A2C3E" stroke-width="1.5" fill="none"/>
+          <!-- 腮红 -->
+          <ellipse cx="48" cy="92" rx="11" ry="7" fill="#FFB3C1" opacity="0.55"/>
+          <ellipse cx="112" cy="92" rx="11" ry="7" fill="#FFB3C1" opacity="0.55"/>
+          <!-- 嘴巴 -->
+          <path d="M70 98 Q80 108 90 98" stroke="#D4687C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M80 105 Q80 112 80 110" stroke="#D4687C" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <!-- 手臂 -->
+          <rect x="20" y="85" width="16" height="36" rx="8" fill="url(#cherryBody)"/>
+          <rect x="124" y="85" width="16" height="36" rx="8" fill="url(#cherryBody)"/>
+          <!-- 小手 -->
+          <circle cx="28" cy="125" r="9" fill="#FF8FA0"/>
+          <circle cx="132" cy="125" r="9" fill="#FF8FA0"/>
+          <!-- 腿 -->
+          <ellipse cx="62" cy="150" rx="14" ry="10" fill="#FF8FA0"/>
+          <ellipse cx="98" cy="150" rx="14" ry="10" fill="#FF8FA0"/>
+          <!-- 小脚 -->
+          <ellipse cx="58" cy="162" rx="16" ry="8" fill="#FF6B8A"/>
+          <ellipse cx="102" cy="162" rx="16" ry="8" fill="#FF6B8A"/>
+          <!-- 蝴蝶结 -->
+          <g transform="translate(80,32)">
+            <polygon points="0,0 -14,-10 -16,2 -8,6" fill="#FF4570"/>
+            <polygon points="0,0 14,-10 16,2 8,6" fill="#FF4570"/>
+            <circle cx="0" cy="0" r="5" fill="#FF2040"/>
+          </g>
+          <defs>
+            <radialGradient id="cherryBody" cx="40%" cy="35%" r="60%">
+              <stop offset="0%" style="stop-color:#FFB3C6"/>
+              <stop offset="40%" style="stop-color:#FF8FA0"/>
+              <stop offset="80%" style="stop-color:#FF6B8A"/>
+              <stop offset="100%" style="stop-color:#E8577A"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="char-name">
+        <span class="char-name-text">生活小能手 · 新新</span>
+      </div>
+      <div class="orbit-icons">
+        <span class="orbit-icon">📖</span>
+        <span class="orbit-icon">⏰</span>
+        <span class="orbit-icon">🩹</span>
+        <span class="orbit-icon">🪴</span>
+        <span class="orbit-icon">🔧</span>
+      </div>
+      <div class="game-title">生活小能手</div>
+      <div class="game-subtitle">1-3年级生活常识闯关答题</div>
+      <div class="text-center mt-16">
+        <button class="btn btn-primary btn-lg" onclick="startGame()">开始闯关</button>
+      </div>
+      <div class="text-center mt-8">
+        <button class="btn btn-outline btn-small" onclick="showLeaderboard()">查看排行榜</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 答题页面 ========== -->
+  <div class="screen" id="screen-quiz">
+    <div class="card">
+      <div class="text-center">
+        <span class="round-badge" id="roundDisplay">第 1 轮</span>
+      </div>
+      <div class="char-name">
+        <span class="char-name-text" style="font-size:16px; padding:4px 16px;">生活小能手 · 新新</span>
+      </div>
+      <div class="text-center">
+        <span class="difficulty-tag" id="difficultyTag">基础题</span>
+      </div>
+      <div class="progress-bar" id="progressBar"></div>
+      <div class="question-text" id="questionText"></div>
+      <div id="optionsContainer"></div>
+      <div id="feedbackArea"></div>
+    </div>
+  </div>
+
+  <!-- ========== 结果页面 ========== -->
+  <div class="screen" id="screen-result">
+    <div class="card">
+      <div class="text-center">
+        <span class="round-badge" id="roundDisplayResult">第 1 轮</span>
+      </div>
+      <div class="score-label">本轮得分</div>
+      <div class="score-big" id="scoreDisplay">3/3</div>
+      <div class="text-center stars" id="starsDisplay">⭐⭐⭐</div>
+      <div id="badgeArea"></div>
+      <div class="text-center mt-12" id="resultMsg"></div>
+      <div class="action-bar">
+        <button class="btn btn-primary" id="btnContinue" onclick="nextRound()">继续闯关</button>
+        <button class="btn btn-secondary" id="btnNextPlayer" onclick="nextPlayer()">下一位玩家</button>
+      </div>
+      <div class="text-center mt-8">
+        <button class="btn btn-outline btn-small" onclick="showLeaderboard()">查看排行榜</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 排行榜 ========== -->
+  <div class="screen" id="screen-leaderboard">
+    <div class="card">
+      <div class="game-title" style="font-size:22px;">排行榜</div>
+      <div id="lbContent"></div>
+      <div class="text-center mt-16">
+        <button class="btn btn-primary btn-small" onclick="backFromLeaderboard()">返回</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ==================== 题库 ====================
+const easyQuestions = [
+  { q: '下面哪种食物适合直接生吃？', opts: ['生豆角','草莓','生土豆','生扁豆'], ans: 1 },
+  { q: '下列哪一组都是我们常吃的主食？', opts: ['米饭、馒头、玉米','糖果、蛋糕、果冻','黄瓜、番茄、生菜','橘子、西瓜、桃子'], ans: 0 },
+  { q: '洗漱的时候不会用到哪一样物品？', opts: ['牙刷','牙膏','积木','洗脸巾'], ans: 2 },
+  { q: '天气寒冷时，我们不会穿戴什么？', opts: ['厚外套','毛线帽','凉拖鞋','厚围巾'], ans: 2 },
+  { q: '下面哪件事属于良好的卫生习惯？', opts: ['饭前认真洗手','随手乱扔垃圾','用手揉眼睛','咬手指指甲'], ans: 0 },
+];
+
+const mediumQuestions = [
+  { q: '下面不属于零食的是？', opts: ['牛奶','棒棒糖','棉花糖','夹心饼干'], ans: 0 },
+  { q: '打扫地面卫生会用到哪种工具？', opts: ['画笔','扫帚','书包','橡皮'], ans: 1 },
+  { q: '上学出门不需要携带的是？', opts: ['课本','玩具汽车','铅笔盒','作业本'], ans: 1 },
+  { q: '家中存在安全隐患、小朋友不能触碰的是？', opts: ['电源插座','毛绒玩偶','绘本图书','布艺抱枕'], ans: 0 },
+  { q: '日常出行最安全的方式是？', opts: ['在马路中间追逐玩耍','乘坐正规车辆出行','攀爬行驶的车辆','突然横穿马路'], ans: 1 },
+];
+
+const hardQuestions = [
+  { q: '临近睡觉前，不适合做的事情是？', opts: ['安静看书','大声打闹玩耍','洗脸刷牙','整理衣物'], ans: 1 },
+  { q: '身体不舒服、生病时会用到的物品是？', opts: ['玩具车','体温计','泡泡机','橡皮泥'], ans: 1 },
+  { q: '空腹状态下，尽量不要吃的食物是？', opts: ['冰镇冷饮','白粥','温水','蒸南瓜'], ans: 0 },
+  { q: '课间活动，文明又安全的游戏是？', opts: ['追逐推挤','安静下棋','攀爬窗台','互相打闹'], ans: 1 },
+  { q: '自己的物品需要定期整理的是？', opts: ['书桌和书包','户外大树','路边路灯','小区围墙'], ans: 0 },
+];
+
+// ==================== 游戏状态 ====================
+let state = {
+  currentPlayer: '',
+  totalRounds: 0,
+  currentRound: 0,
+  roundQuestions: [],
+  currentQIndex: 0,
+  roundScore: 0,
+  correctCount: 0,
+  selectedAnswer: -1,
+  answered: false,
+  answers: [],
+  returnTo: 'home',
+  playerCounter: 0 // auto-generate player IDs
+};
+
+// ==================== 工具函数 ====================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickRandom(arr, count) {
+  return shuffle(arr).slice(0, count);
+}
+
+// ==================== 屏幕切换 ====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ==================== 首页 ====================
+function goHome() {
+  showScreen('screen-home');
+}
+
+function startGame() {
+  state.returnTo = 'home';
+  state.totalRounds++;
+  state.currentRound = state.totalRounds;
+  // 自动生成玩家编号
+  state.playerCounter++;
+  state.currentPlayer = '小玩家' + state.playerCounter;
+  state.roundScore = 0;
+  state.correctCount = 0;
+  state.answers = [];
+  generateRound();
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+// ==================== 生成题目 ====================
+function generateRound() {
+  // 随机2道基础 + 1道提升(中等/进阶随机)
+  const basics = pickRandom(easyQuestions, 2);
+  const upgradePool = [...mediumQuestions, ...hardQuestions];
+  const upgrade = pickRandom(upgradePool, 1);
+  state.roundQuestions = shuffle([...basics, ...upgrade]);
+  // 为每道题标记难度
+  state.roundQuestions = state.roundQuestions.map(q => {
+    let diff = 'basic';
+    if (mediumQuestions.includes(q)) diff = 'upgrade';
+    if (hardQuestions.includes(q)) diff = 'upgrade';
+    return { ...q, difficulty: diff };
+  });
+  state.currentQIndex = 0;
+  state.roundScore = 0;
+  state.correctCount = 0;
+  state.answers = [];
+  state.selectedAnswer = -1;
+  state.answered = false;
+}
+
+// ==================== 渲染题目 ====================
+function renderQuestion() {
+  if (state.currentQIndex >= 3) {
+    showResults();
+    return;
+  }
+
+  const q = state.roundQuestions[state.currentQIndex];
+  document.getElementById('roundDisplay').textContent = '第 ' + state.currentRound + ' 轮';
+  const diffTag = document.getElementById('difficultyTag');
+  diffTag.textContent = q.difficulty === 'basic' ? '基础题' : '提升题';
+  diffTag.className = 'difficulty-tag ' + q.difficulty;
+
+  // 进度条
+  let progressHTML = '';
+  for (let i = 0; i < 3; i++) {
+    let cls = '';
+    if (i < state.currentQIndex) {
+      cls = state.answers[i] ? 'correct-dot' : 'wrong-dot';
+    } else if (i === state.currentQIndex) {
+      cls = 'current';
+    }
+    progressHTML += '<div class="progress-dot ' + cls + '"></div>';
+  }
+  document.getElementById('progressBar').innerHTML = progressHTML;
+
+  // 题目
+  const qNum = state.currentQIndex + 1;
+  document.getElementById('questionText').textContent = '第' + qNum + '题: ' + q.q;
+
+  // 选项
+  const labels = ['A', 'B', 'C', 'D'];
+  let optsHTML = '';
+  q.opts.forEach((opt, i) => {
+    optsHTML += '<button class="option-btn" id="opt-' + i + '" onclick="selectAnswer(' + i + ')"><span class="option-label">' + labels[i] + '</span>' + opt + '</button>';
+  });
+  document.getElementById('optionsContainer').innerHTML = optsHTML;
+  document.getElementById('feedbackArea').innerHTML = '';
+
+  state.selectedAnswer = -1;
+  state.answered = false;
+}
+
+// ==================== 选择答案 ====================
+function selectAnswer(index) {
+  if (state.answered) return;
+  state.selectedAnswer = index;
+  state.answered = true;
+
+  const q = state.roundQuestions[state.currentQIndex];
+  const isCorrect = (index === q.ans);
+  state.answers.push(isCorrect);
+  if (isCorrect) {
+    state.roundScore++;
+    state.correctCount++;
+  }
+
+  // 高亮选中
+  const allOpts = document.querySelectorAll('#optionsContainer .option-btn');
+  allOpts.forEach(btn => btn.classList.add('disabled'));
+
+  // 高亮正确答案和用户选择
+  allOpts[q.ans].classList.add('correct');
+  if (!isCorrect) {
+    allOpts[index].classList.add('wrong');
+  }
+
+  // 反馈
+  let fbHTML = '';
+  if (isCorrect) {
+    fbHTML = '<div class="feedback correct-fb">答对啦！真棒！</div>';
+  } else {
+    fbHTML = '<div class="feedback wrong-fb">答错了哦~ 下次加油！</div>';
+  }
+  fbHTML += '<div class="text-center mt-12"><button class="btn btn-primary btn-small" id="btnNext" onclick="nextQuestion()">下一题</button></div>';
+  document.getElementById('feedbackArea').innerHTML = fbHTML;
+}
+
+// ==================== 下一题 ====================
+function nextQuestion() {
+  state.currentQIndex++;
+  if (state.currentQIndex >= 3) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ==================== 显示结果 ====================
+function showResults() {
+  document.getElementById('roundDisplayResult').textContent = '第 ' + state.currentRound + ' 轮';
+  document.getElementById('scoreDisplay').textContent = state.roundScore + '/3';
+  document.getElementById('starsDisplay').textContent = '⭐'.repeat(state.roundScore);
+
+  // 徽章判断 - 全对才给徽章
+  const badgeArea = document.getElementById('badgeArea');
+  if (state.roundScore === 3) {
+    badgeArea.innerHTML = '<div class="badge-display"><div class="badge-icon">🏅</div><div class="badge-text">生活小能手</div></div>';
+  } else {
+    badgeArea.innerHTML = '';
+  }
+
+  // 通关判断
+  const resultMsg = document.getElementById('resultMsg');
+  if (state.roundScore >= 2) {
+    resultMsg.innerHTML = '<span style="font-size:18px;font-weight:600;color:#4CAF50;">恭喜通关！</span>';
+  } else {
+    resultMsg.innerHTML = '<span style="font-size:18px;font-weight:600;color:#EF5350;">继续加油哦！</span>';
+  }
+
+  // 按钮
+  document.getElementById('btnContinue').textContent = '继续闯关';
+  document.getElementById('btnContinue').style.display = 'inline-block';
+  document.getElementById('btnNextPlayer').textContent = '下一位玩家';
+  document.getElementById('btnNextPlayer').style.display = 'inline-block';
+
+  // 保存排行榜
+  saveToLeaderboard();
+
+  showScreen('screen-result');
+}
+
+// ==================== 继续闯关 ====================
+function nextRound() {
+  state.totalRounds++;
+  state.currentRound = state.totalRounds;
+  state.roundScore = 0;
+  state.correctCount = 0;
+  state.answers = [];
+  generateRound();
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+// ==================== 下一位玩家 ====================
+function nextPlayer() {
+  state.totalRounds++;
+  state.currentRound = state.totalRounds;
+  state.playerCounter++;
+  state.currentPlayer = '小玩家' + state.playerCounter;
+  state.roundScore = 0;
+  state.correctCount = 0;
+  state.answers = [];
+  generateRound();
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+// ==================== 排行榜 ====================
+const LB_KEY = 'lifeMaster_leaderboard';
+
+function getLeaderboard() {
+  try {
+    const raw = localStorage.getItem(LB_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    return [];
+  }
+}
+
+function saveToLeaderboard() {
+  if (!state.currentPlayer) return;
+  const lb = getLeaderboard();
+  // 查找现有玩家
+  let entry = lb.find(e => e.name === state.currentPlayer);
+  if (!entry) {
+    entry = { name: state.currentPlayer, totalRounds: 0, totalScore: 0, perfectRounds: 0 };
+    lb.push(entry);
+  }
+  entry.totalRounds++;
+  entry.totalScore += state.roundScore;
+  if (state.roundScore === 3) entry.perfectRounds++;
+
+  // 排序: 正确率 > 通关组数 > 全对次数
+  lb.sort((a, b) => {
+    const rateA = a.totalRounds > 0 ? a.totalScore / (a.totalRounds * 3) : 0;
+    const rateB = b.totalRounds > 0 ? b.totalScore / (b.totalRounds * 3) : 0;
+    if (Math.abs(rateA - rateB) > 0.001) return rateB - rateA;
+    if (b.totalRounds !== a.totalRounds) return b.totalRounds - a.totalRounds;
+    return b.perfectRounds - a.perfectRounds;
+  });
+
+  try { localStorage.setItem(LB_KEY, JSON.stringify(lb)); } catch(e) {}
+}
+
+function showLeaderboard() {
+  state.returnTo = document.querySelector('.screen.active').id.replace('screen-', '');
+  const lb = getLeaderboard();
+  let html = '';
+
+  if (lb.length === 0) {
+    html = '<div class="text-center mt-16" style="color:#A08060;">还没有玩家数据，快来挑战吧！</div>';
+  } else {
+    html = '<table class="leaderboard"><thead><tr><th>排名</th><th>玩家</th><th>通关</th><th>正确率</th><th>全对</th></tr></thead><tbody>';
+    lb.forEach((entry, i) => {
+      const rate = entry.totalRounds > 0 ? Math.round(entry.totalScore / (entry.totalRounds * 3) * 100) : 0;
+      const rankClass = i < 3 ? 'rank-' + (i+1) : '';
+      const rankEmoji = i === 0 ? '🥇' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : (i+1)));
+      const perfectMark = entry.perfectRounds > 0 ? ' <span class="perfect-badge" title="全对' + entry.perfectRounds + '次">🏅×' + entry.perfectRounds + '</span>' : '';
+      html += '<tr class="' + rankClass + '"><td>' + rankEmoji + '</td><td>' + escapeHTML(entry.name) + '</td><td>' + entry.totalRounds + '组</td><td>' + rate + '%</td><td>' + entry.perfectRounds + '次' + perfectMark + '</td></tr>';
+    });
+    html += '</tbody></table>';
+  }
+
+  document.getElementById('lbContent').innerHTML = html;
+  showScreen('screen-leaderboard');
+}
+
+function backFromLeaderboard() {
+  const target = state.returnTo === 'result' ? 'screen-result' : 'screen-home';
+  showScreen(target);
+}
+
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ==================== 初始化 ====================
+// 页面加载完成，等待玩家点击开始
+
+</script>
+
+</body>
+</html>
