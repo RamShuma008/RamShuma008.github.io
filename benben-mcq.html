@@ -314,9 +314,9 @@ body::after {
 .result-stars { font-size: 32px; margin: 10px 0; }
 .result-msg { font-size: 16px; color: #689f78; font-weight: 600; padding: 12px; background: #f0f8f4; border-radius: 14px; margin-bottom: 18px; line-height: 1.6; }
 
-.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
 .btn-retry {
-  padding: 16px; font-size: 17px; font-weight: 700;
+  padding: 14px 8px; font-size: 15px; font-weight: 700;
   border: none; border-radius: 16px;
   cursor: pointer; transition: all 0.3s ease;
 }
@@ -329,6 +329,11 @@ body::after {
 .btn-leaderboard {
   background: white; color: var(--green-dark);
   border: 2px solid var(--green);
+}
+.btn-next-player {
+  background: linear-gradient(135deg, var(--orange), #ff9800);
+  color: white;
+  box-shadow: 0 4px 16px rgba(255,179,71,0.4);
 }
 
 /* Leaderboard */
@@ -764,8 +769,9 @@ function renderResult() {
         '</div>' +
         '<div class="result-msg">' + fb.msg + '</div>' +
         '<div class="btn-row">' +
-          '<button class="btn-retry btn-leaderboard" onclick="showWelcome()">🏠 回到首页</button>' +
-          '<button class="btn-retry btn-next-round" onclick="nextRound()">🔄 挑战下一轮</button>' +
+          '<button class="btn-retry btn-leaderboard" onclick="location.href=\'./index.html\'">📋 返回合集</button>' +
+          '<button class="btn-retry btn-next-player" onclick="nextPlayer()">👤 下一位玩家</button>' +
+          '<button class="btn-retry btn-next-round" onclick="nextRound()">🔄 下一轮</button>' +
         '</div>' +
         lbHtml +
       '</div>' +
@@ -928,6 +934,18 @@ function nextRound() {
   startBGM();
 
   renderQuiz();
+}
+
+function nextPlayer() {
+  gameState.playerName = '';
+  gameState.currentRound = 1;
+  gameState.totalRounds = 0;
+  gameState.totalScore = 0;
+  clearInterval(gameState.timerInterval);
+  gameState.screen = 'welcome';
+  playStartSound();
+  stopBGM();
+  renderWelcome();
 }
 
 // ==================== 彩带特效 ====================

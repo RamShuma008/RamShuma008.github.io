@@ -135,6 +135,8 @@ body{
   font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;margin:6px;
 }
 .btn-secondary:hover{background:rgba(110,198,255,0.12);}
+.btn-next-player{background:linear-gradient(135deg,var(--gold),#e67e22);color:var(--bg0);}
+.btn-back-home{background:transparent;color:var(--green);border:2px solid var(--green);}
 
 .leaderboard-table{width:100%;border-collapse:collapse;margin-top:12px;}
 .leaderboard-table th{
@@ -563,7 +565,9 @@ function showScore() {
     '<div style="margin-top:8px;font-size:14px;color:var(--muted);">答对 ' + currentScore + '/' + total + ' 题</div>' +
     '<div style="margin-top:18px;">' +
       '<button class="btn-primary" onclick="startNewRound()">🔄 再挑战一轮</button>' +
-      '<button class="btn-secondary" onclick="showBoard()">🏆 查看排行榜</button>' +
+      '<button class="btn-secondary" onclick="showBoard()">🏆 查看排行榜</button><br>' +
+      '<button class="btn-primary btn-next-player" onclick="nextPlayer()" style="margin-top:10px;">👤 下一位玩家</button>' +
+      '<button class="btn-secondary btn-back-home" onclick="location.href=\'./index.html\'" style="margin-top:10px;">📋 返回合集</button>' +
     '</div>' +
     '</div>');
 }
@@ -629,6 +633,14 @@ function startNewRound() {
   currentScore = 0;
   renderQuestion();
   startBGM();
+}
+
+function nextPlayer() {
+  playerName = '';
+  localStorage.removeItem('bb_mcq_name');
+  currentRound = 0;
+  stopBGM();
+  showNameInput();
 }
 
 // ==================== INIT ====================

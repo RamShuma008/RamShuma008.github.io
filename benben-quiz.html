@@ -147,6 +147,8 @@ body{
 }
 .sc-btn.again{background:linear-gradient(135deg,#005acc,#0077ff);color:#fff;box-shadow:0 4px 16px rgba(0,119,255,.35);}
 .sc-btn.board{background:linear-gradient(135deg,#6622cc,#9944ff);color:#fff;box-shadow:0 4px 16px rgba(153,68,255,.35);}
+.sc-btn.next-player{background:linear-gradient(135deg,#e67e22,#f39c12);color:#fff;box-shadow:0 4px 16px rgba(230,126,34,.35);}
+.sc-btn.back-home{background:linear-gradient(135deg,#2ecc71,#27ae60);color:#fff;box-shadow:0 4px 16px rgba(46,204,113,.35);}
 .sc-btn:hover{transform:translateY(-2px);}
 /* ---- 榜单面板 ---- */
 .board-overlay{
@@ -262,6 +264,8 @@ body{
     <div class="sc-btns">
       <button class="sc-btn again" onclick="startNewRound()">再挑战一组 🚀</button>
       <button class="sc-btn board" onclick="showBoard()">查看排行榜 🏆</button>
+      <button class="sc-btn next-player" onclick="nextPlayer()">👤 下一位玩家</button>
+      <button class="sc-btn back-home" onclick="location.href='./index.html'">📋 返回合集</button>
     </div>
   </div>
 </div>
@@ -757,6 +761,18 @@ function showBoard() {
 
 function closeBoard() {
   document.getElementById('board-overlay').classList.remove('show');
+}
+
+function nextPlayer() {
+  playerName = '';
+  localStorage.removeItem('bbqz_name');
+  roundCount = 0;
+  localStorage.setItem('bbqz_round', roundCount);
+  document.getElementById('score-overlay').classList.remove('show');
+  document.getElementById('name-overlay').classList.add('show');
+  document.getElementById('name-input').value = '';
+  document.getElementById('name-input').placeholder = '给自己取个名字吧...';
+  stopBgMusic();
 }
 
 // ==================== 初始化 ====================

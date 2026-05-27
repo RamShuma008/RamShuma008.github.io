@@ -146,6 +146,8 @@ body {
 .btn-primary:hover { box-shadow: 0 4px 16px rgba(255,179,71,0.4); }
 .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
 .btn-secondary { background: #fff; color: var(--green-dark); border: 2px solid var(--green); }
+.btn-next-player { background: linear-gradient(135deg,#e67e22,#f39c12); color: #fff; }
+.btn-back-home { background: #fff; color: var(--green-dark); border: 2px solid var(--green); }
 
 /* Start Screen */
 .start-screen { text-align: center; padding: 32px 24px; }
@@ -695,6 +697,8 @@ function renderRoundResult(){
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="showLB()">🏆 排行榜</button>
       <button class="btn btn-primary" onclick="${isLast?'finishAll()':'startNextRound()'}">${isLast?'查看最终排名 🎯':'下一组 ▶'}</button>
+      <button class="btn btn-next-player" onclick="nextPlayerDrag()">👤 下一位玩家</button>
+      <button class="btn btn-back-home" onclick="location.href='./index.html'">📋 返回合集</button>
     </div>
   </div>`;
 }
@@ -722,6 +726,8 @@ function renderFinal(){
     <div class="btn-row" style="margin-top:16px;">
       <button class="btn btn-secondary" onclick="resetGame()">再来一次 🔄</button>
       <button class="btn btn-primary" onclick="shareResult()">分享成绩 📤</button>
+      <button class="btn btn-next-player" onclick="nextPlayerDrag()">👤 下一位玩家</button>
+      <button class="btn btn-back-home" onclick="location.href='./index.html'">📋 返回合集</button>
     </div>
   </div>`;
 }
@@ -797,6 +803,17 @@ function resetGame(){
   renderApp();
   setTimeout(()=>{
     const ni=document.getElementById('nameInput'), sb=document.getElementById('startBtn');
+    if(ni) ni.addEventListener('input',function(){if(sb)sb.disabled=!this.value.trim();});
+  },100);
+}
+
+function nextPlayerDrag(){
+  stopConfetti(); stopBGM();
+  gameState={rounds:[],currentRoundIdx:0,currentQIdx:0,totalScore:0,roundScore:0,placements:{},submitted:false,timer:0,timerInterval:null,playerName:'',dragging:null};
+  renderApp();
+  setTimeout(()=>{
+    const ni=document.getElementById('nameInput'), sb=document.getElementById('startBtn');
+    if(ni&&sb){ni.value='';ni.focus();}
     if(ni) ni.addEventListener('input',function(){if(sb)sb.disabled=!this.value.trim();});
   },100);
 }
